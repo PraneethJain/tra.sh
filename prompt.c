@@ -13,5 +13,12 @@ void prompt()
   {
     // Do error handling
   }
-  printf("<%s@%s> ", username.str, hostname.str);
+
+  string cwd = new_string(PATH_MAX);
+  if (getcwd(cwd.str, cwd.size) == NULL)
+  {
+    // Do error handling
+  }
+
+  printf("<%s@%s:%s> ", username.str, hostname.str, cwd.str);
 }
