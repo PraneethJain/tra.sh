@@ -20,9 +20,6 @@ void prompt()
     // Do error handling
   }
 
-  // Replace /home/<username> with ~
-  string homepath = new_string(512);
-  sprintf(homepath.str, "/home/%s", username.str);
   if (strstr(cwd.str, homepath.str) == cwd.str) // If cwd starts with homepath
   {
     string tilde = new_string(2);
