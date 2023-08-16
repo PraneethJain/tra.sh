@@ -10,5 +10,6 @@ typedef struct string
 } string;
 
 string new_string(size_t size);
+void replace(string *s, string a, string b);
 
 #endif

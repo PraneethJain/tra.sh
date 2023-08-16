@@ -20,5 +20,12 @@ void prompt()
     // Do error handling
   }
 
+  // Replace /home/<username> with ~
+  string homepath = new_string(512);
+  sprintf(homepath.str, "/home/%s", username.str);
+  string tilde = new_string(2);
+  tilde.str = "~\0";
+  replace(&cwd, homepath, tilde);
+
   printf("<%s@%s:%s> ", username.str, hostname.str, cwd.str);
 }
