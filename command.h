@@ -5,11 +5,12 @@
 #include <stdbool.h>
 typedef struct command
 {
-  string name;
   int argc;
-  string *argv;
+  char **argv;
+  bool is_background;
 } command;
 
+void parse_input(string input);
 void parse_command(string input);
 
 #endif

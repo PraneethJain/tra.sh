@@ -13,6 +13,6 @@ int main()
     prompt();
     string input = new_string(4096);
     fgets(input.str, 4096, stdin);
-    parse_command(input);
+    parse_input(input);
   }
 }
