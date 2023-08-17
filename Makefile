@@ -1,2 +1,2 @@
 main:
-	gcc -g main.c prompt.c base.c command.c warp.c
+	gcc -g main.c prompt.c base.c command.c warp.c system.c

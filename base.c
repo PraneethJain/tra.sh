@@ -24,3 +24,11 @@ void replace(string *s, string a, string b)
 
   s->str = temp.str;
 }
+
+char **to_cstring_array(string *s, size_t len)
+{
+  char **res = (char **)malloc(sizeof(char *) * len);
+  for (int i = 0; i < len; ++i)
+    res[i] = s[i].str;
+  return res;
+}

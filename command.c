@@ -6,6 +6,8 @@ void parse_command(string input)
   string delimiters = new_string(128);
   strcpy(delimiters.str, " \t\n\v\f\r");
 
+  string input_copy = new_string(input.size);
+  strcpy(input_copy.str, input.str);
   tok.str = strtok(input.str, delimiters.str);
   if (strcmp(tok.str, "warp") == 0)
   {
@@ -13,6 +15,6 @@ void parse_command(string input)
   }
   else
   {
-    printf("Not a valid command!\n");
+    system_command(input_copy);
   }
 }
