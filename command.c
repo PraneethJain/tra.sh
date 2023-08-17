@@ -71,23 +71,21 @@ void parse_input(string input)
   //   printf("Is background: %i\n", commands[i].is_background);
   //   printf("\n");
   // }
+
+  for (int i = 0; i < command_count; ++i)
+  {
+    parse_command(commands[i]);
+  }
 }
 
-void parse_command(string input)
+void parse_command(command c)
 {
-  string tok = new_string(4096);
-  string delimiters = new_string(128);
-  strcpy(delimiters.str, " \t\n\v\f\r");
-
-  string input_copy = new_string(input.size);
-  strcpy(input_copy.str, input.str);
-  tok.str = strtok(input.str, delimiters.str);
-  if (strcmp(tok.str, "warp") == 0)
+  if (strcmp(c.argv[0], "warp") == 0)
   {
-    warp(input);
+    warp(c);
   }
   else
   {
-    system_command(input_copy);
+    system_command(c);
   }
 }

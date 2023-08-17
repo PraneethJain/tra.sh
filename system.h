@@ -2,6 +2,6 @@
 #define __SYSTEM_H
 
 #include "base.h"
-void system_command(string input);
+void system_command(command c);
 
 #endif
