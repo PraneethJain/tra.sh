@@ -5,6 +5,7 @@ string new_string(size_t size)
   string s;
   s.str = (char *)malloc(size * sizeof(char));
   s.size = size;
+  s.str[0] = '\0';
 
   return s;
 }

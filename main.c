@@ -1,12 +1,15 @@
 #include "headers.h"
 
 string homepath;
+string lastpath;
 
 int main()
 {
 
   homepath = new_string(PATH_MAX);
   getcwd(homepath.str, homepath.size);
+
+  lastpath = new_string(PATH_MAX);
 
   while (1)
   {

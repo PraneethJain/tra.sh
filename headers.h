@@ -21,5 +21,6 @@
 #include "warp.h"
 
 extern string homepath;
+extern string lastpath;
 
 #endif
