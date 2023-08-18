@@ -16,6 +16,7 @@
 
 #include "base.h"
 #include "command.h"
+#include "peek.h"
 #include "prompt.h"
 #include "system.h"
 #include "warp.h"

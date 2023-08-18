@@ -84,6 +84,10 @@ void parse_command(command c)
   {
     warp(c);
   }
+  else if (strcmp(c.argv[0], "peek") == 0)
+  {
+    peek(c);
+  }
   else
   {
     system_command(c);
