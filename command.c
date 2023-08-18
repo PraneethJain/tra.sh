@@ -14,7 +14,7 @@ void parse_input(string input)
   {
     bool to_exit = false;
     char *next = NULL;
-    bool is_background;
+    bool is_background = false;
     for (next = input.str + offset; *next != '\0'; ++next)
     {
       if (*next == '&')

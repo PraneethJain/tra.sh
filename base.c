@@ -27,8 +27,9 @@ void replace(string *s, string a, string b)
 
 char **to_cstring_array(string *s, size_t len)
 {
-  char **res = (char **)malloc(sizeof(char *) * len);
+  char **res = (char **)malloc(sizeof(char *) * (len + 1));
   for (int i = 0; i < len; ++i)
     res[i] = s[i].str;
+  res[len] = NULL;
   return res;
 }
