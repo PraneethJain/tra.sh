@@ -1,8 +1,5 @@
 #include "headers.h"
 
-bool flag_a = false;
-bool flag_l = true;
-
 string get_perms(struct stat *info)
 {
   string perms = new_string(11);
@@ -76,8 +73,43 @@ void print_long(char *path, const char *name)
 
 void peek(command c)
 {
+  bool flag_a = false;
+  bool flag_l = false;
+  bool found_path = false;
+  string path = new_string(PATH_MAX);
+  for (int i = 1; i < c.argc; ++i)
+  {
+    if (c.argv[i][0] == '-')
+    {
+      size_t len = strlen(c.argv[i]);
+      for (int j = 1; j < len; ++j)
+      {
+        flag_l |= c.argv[i][j] == 'l';
+        flag_a |= c.argv[i][j] == 'a';
+      }
+    }
+    else if (found_path)
+    {
+      // Do error handling
+      printf("Multiple paths found: %s and %s\n", path.str, c.argv[i]);
+      return;
+    }
+    else
+    {
+      found_path = true;
+      strcpy(path.str, c.argv[i]);
+    }
+  }
+
+  printf("flag l is %i\n", flag_l);
+  printf("flag a is %i\n", flag_a);
+  if (!found_path)
+  {
+    strcpy(path.str, ".");
+  }
+
   struct dirent **entries;
-  int n = scandir(c.argv[1], &entries, 0, alphasort);
+  int n = scandir(path.str, &entries, 0, alphasort);
   if (n < 0)
   {
     // Do error handling
@@ -86,16 +118,15 @@ void peek(command c)
   {
     for (int i = 0; i < n; ++i)
     {
-      char *path = c.argv[1];
-      if (path[strlen(path) - 1] != '/')
+      if (path.str[strlen(path.str) - 1] != '/')
       {
-        strcat(path, "/");
+        strcat(path.str, "/");
       }
 
       if (!flag_a && entries[i]->d_name[0] == '.')
         continue;
       if (flag_l)
-        print_long(path, entries[i]->d_name);
+        print_long(path.str, entries[i]->d_name);
       else
         printf("%s\n", entries[i]->d_name);
     }
