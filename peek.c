@@ -3,16 +3,9 @@
 bool flag_a = false;
 bool flag_l = true;
 
-void print_long(char *path, const char *name)
+string get_perms(struct stat *info)
 {
-  // When last modification is more than 6 months ago, year is shown instead of time
-
-  string cur = new_string(PATH_MAX);
-  strcat(cur.str, path);
-  strcat(cur.str, name);
-  struct stat info;
-  lstat(cur.str, &info);
-
+  string perms = new_string(11);
   // First character in permissions:
   // -    Regular file
   // b    Block special file
@@ -21,50 +14,62 @@ void print_long(char *path, const char *name)
   // l    Symbolic link
   // p    FIFO
   // s    Socket
-  char filetype;
-  if (S_ISDIR(info.st_mode))
-    filetype = 'd';
-  else if (S_ISCHR(info.st_mode))
-    filetype = 'c';
-  else if (S_ISBLK(info.st_mode))
-    filetype = 'b';
-  else if (S_ISREG(info.st_mode))
-    filetype = '-';
-  else if (S_ISFIFO(info.st_mode))
-    filetype = 'p';
-  else if (S_ISLNK(info.st_mode))
-    filetype = 'l';
-  else if (S_ISSOCK(info.st_mode))
-    filetype = 's';
+  if (S_ISDIR(info->st_mode))
+    strcat(perms.str, "d");
+  else if (S_ISCHR(info->st_mode))
+    strcat(perms.str, "c");
+  else if (S_ISBLK(info->st_mode))
+    strcat(perms.str, "b");
+  else if (S_ISREG(info->st_mode))
+    strcat(perms.str, "-");
+  else if (S_ISFIFO(info->st_mode))
+    strcat(perms.str, "p");
+  else if (S_ISLNK(info->st_mode))
+    strcat(perms.str, "l");
+  else if (S_ISSOCK(info->st_mode))
+    strcat(perms.str, "s");
   else
-    filetype = '?';
+    strcat(perms.str, "?");
 
+  strcat(perms.str, info->st_mode & S_IRUSR ? "r" : "-");
+  strcat(perms.str, info->st_mode & S_IWUSR ? "w" : "-");
+  strcat(perms.str, info->st_mode & S_IXUSR ? "x" : "-");
+  strcat(perms.str, info->st_mode & S_IRGRP ? "r" : "-");
+  strcat(perms.str, info->st_mode & S_IWGRP ? "w" : "-");
+  strcat(perms.str, info->st_mode & S_IXGRP ? "x" : "-");
+  strcat(perms.str, info->st_mode & S_IROTH ? "r" : "-");
+  strcat(perms.str, info->st_mode & S_IWOTH ? "w" : "-");
+  strcat(perms.str, info->st_mode & S_IXOTH ? "x" : "-");
+
+  return perms;
+}
+
+string get_datetime(struct stat *info)
+{
+  // When last modification is more than 6 months ago, year is shown instead of time
   string datetime = new_string(128);
-  time_t cur_time = time(0);
-  if (cur_time - info.st_mtime < 15768000)
-  {
-    strftime(datetime.str, datetime.size, "%h %d %H:%M", localtime(&info.st_mtime));
-  }
-  else
-  {
-    strftime(datetime.str, datetime.size, "%h %d %Y", localtime(&info.st_mtime));
-  }
+  strftime(datetime.str, datetime.size, time(0) - info->st_mtime < 15768000 ? "%h %d %H:%M" : "%h %d %Y",
+           localtime(&info->st_mtime));
 
-  printf("%c", filetype);
-  printf(info.st_mode & S_IRUSR ? "r" : "-");
-  printf(info.st_mode & S_IWUSR ? "w" : "-");
-  printf(info.st_mode & S_IXUSR ? "x" : "-");
-  printf(info.st_mode & S_IRGRP ? "r" : "-");
-  printf(info.st_mode & S_IWGRP ? "w" : "-");
-  printf(info.st_mode & S_IXGRP ? "x" : "-");
-  printf(info.st_mode & S_IROTH ? "r" : "-");
-  printf(info.st_mode & S_IWOTH ? "w" : "-");
-  printf(info.st_mode & S_IXOTH ? "x" : "-");
+  return datetime;
+}
+
+void print_long(char *path, const char *name)
+{
+
+  string cur = new_string(PATH_MAX);
+  strcat(cur.str, path);
+  strcat(cur.str, name);
+
+  struct stat info;
+  lstat(cur.str, &info);
+
+  printf("%s ", get_perms(&info).str);
   printf(" %4li ", info.st_nlink);
   printf("%8s ", getpwuid(info.st_uid)->pw_name);
   printf("%8s ", getgrgid(info.st_gid)->gr_name);
   printf("%12li ", info.st_size); // Enough space for a terabyte
-  printf("%s ", datetime.str);
+  printf("%s ", get_datetime(&info).str);
   printf("%s", name);
   printf("\n");
 }
