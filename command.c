@@ -88,6 +88,10 @@ void parse_command(command c)
   {
     peek(c);
   }
+  else if (strcmp(c.argv[0], "proclore") == 0)
+  {
+    proclore(c);
+  }
   else
   {
     system_command(c);
