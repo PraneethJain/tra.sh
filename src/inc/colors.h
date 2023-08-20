@@ -8,7 +8,7 @@
 #define C_BLUE "\x1b[34m"
 #define C_MAGENTA "\x1b[35m"
 #define C_CYAN "\x1b[36m"
-#define C_WHITE "\x1b[37m]"
+#define C_WHITE "\x1b[37m"
 #define C_RESET "\x1b[0m"
 
 #endif
