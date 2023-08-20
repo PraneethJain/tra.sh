@@ -1,9 +1,6 @@
 #ifndef HEADERS_H_
 #define HEADERS_H_
 
-#define MAX_ARGS 1024
-#define MAX_STR_LEN 1024
-
 #include <assert.h>
 #include <dirent.h>
 #include <grp.h>
@@ -34,5 +31,7 @@
 extern string homepath;
 extern string lastpath;
 extern process_list p;
+extern const char *history_path;
+extern history h;
 
 #endif

@@ -2,6 +2,7 @@
 #define __BASE_H
 
 #include <stdio.h>
+#define MAX_COMMANDS 128
 #define MAX_ARGS 1024
 #define MAX_STR_LEN 1024
 
@@ -17,6 +18,12 @@ typedef struct command
   char **argv;
   bool is_background;
 } command;
+
+typedef struct commands
+{
+  command arr[MAX_COMMANDS];
+  size_t size;
+} commands;
 
 string new_string(size_t size);
 void replace(string *s, string a, string b);

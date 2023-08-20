@@ -2,8 +2,11 @@
 
 void parse_input(string input)
 {
-  command commands[128];
-  int command_count = 0;
+  input.str[strcspn(input.str, "\r\n")] = 0;
+  string input_copy = new_string(strlen(input.str));
+  strcpy(input_copy.str, input.str);
+  commands c;
+  c.size = 0;
 
   size_t input_length = strlen(input.str);
   size_t cur_ptr = 0;
@@ -15,7 +18,7 @@ void parse_input(string input)
   {
     if ((cur_command_len = strcspn(input.str + cur_ptr, ";&")) > 0)
     {
-      commands[command_count].is_background = input.str[cur_ptr + cur_command_len] == '&';
+      c.arr[c.size].is_background = input.str[cur_ptr + cur_command_len] == '&';
 
       input.str[cur_ptr + cur_command_len] = '\0';
       string current_command = new_string(strlen(input.str + cur_ptr) + 1);
@@ -28,27 +31,28 @@ void parse_input(string input)
         arguments[argc] = new_string(strlen(tok.str));
         strcpy(arguments[argc++].str, tok.str);
       }
-      commands[command_count].argc = argc;
-      commands[command_count].argv = to_cstring_array(arguments, argc);
-      command_count += argc != 0;
+      c.arr[c.size].argc = argc;
+      c.arr[c.size].argv = to_cstring_array(arguments, argc);
+      c.size += argc != 0;
     }
   }
 
-  // printf("%i Commands\n\n", command_count);
+  // printf("%i c\n\n", command_count);
   // for (int i = 0; i < command_count; ++i)
   // {
-  //   printf("Command name: %s\n", commands[i].argv[0]);
-  //   for (int j = 1; j < commands[i].argc; ++j)
+  //   printf("Command name: %s\n", c[i].argv[0]);
+  //   for (int j = 1; j < c[i].argc; ++j)
   //   {
-  //     printf("arg%i: %s\n", j, commands[i].argv[j]);
+  //     printf("arg%i: %s\n", j, c[i].argv[j]);
   //   }
-  //   printf("Is background: %i\n", commands[i].is_background);
+  //   printf("Is background: %i\n", c[i].is_background);
   //   printf("\n");
   // }
 
-  for (int i = 0; i < command_count; ++i)
+  add_event(input_copy, c); // strtok modifies the input string, so a copy is used here.
+  for (int i = 0; i < c.size; ++i)
   {
-    exec_command(commands[i]);
+    exec_command(c.arr[i]);
   }
 }
 

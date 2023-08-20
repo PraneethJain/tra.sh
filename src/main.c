@@ -3,6 +3,8 @@
 string homepath;
 string lastpath;
 process_list p;
+const char *history_path = ".trash_history";
+history h;
 
 int main()
 {
@@ -11,6 +13,17 @@ int main()
   getcwd(homepath.str, homepath.size);
   lastpath = new_string(PATH_MAX);
   p = init_process_list();
+
+  FILE *history_file = fopen(history_path, "rb");
+  if (history_file == NULL)
+  {
+    h.cur_size = 0;
+  }
+  else
+  {
+    fread(&h, sizeof(history), 1, history_file);
+    fclose(history_file);
+  }
 
   while (1)
   {
