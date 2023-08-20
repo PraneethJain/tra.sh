@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "../headers.h"
 
 void system_command(command c)
 {

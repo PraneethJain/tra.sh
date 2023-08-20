@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "../headers.h"
 
 string get_perms(struct stat *info)
 {

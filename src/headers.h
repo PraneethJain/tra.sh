@@ -20,14 +20,14 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base.h"
-#include "command.h"
-#include "peek.h"
-#include "proclore.h"
-#include "procs.h"
-#include "prompt.h"
-#include "system.h"
-#include "warp.h"
+#include "inc/base.h"
+#include "inc/command.h"
+#include "inc/peek.h"
+#include "inc/proclore.h"
+#include "inc/procs.h"
+#include "inc/prompt.h"
+#include "inc/system.h"
+#include "inc/warp.h"
 
 extern string homepath;
 extern string lastpath;
