@@ -5,59 +5,33 @@ void parse_input(string input)
   command commands[128];
   int command_count = 0;
 
+  size_t input_length = strlen(input.str);
+  size_t cur_ptr = 0;
+  string tok = new_string(MAX_STR_LEN);
   string delimiters = new_string(128);
   strcpy(delimiters.str, " \t\n\v\f\r");
-  string tok = new_string(MAX_STR_LEN);
-
-  size_t offset = 0;
-  while (1)
+  size_t cur_command_len;
+  for (size_t cur_ptr = 0; cur_ptr < input_length; cur_ptr += cur_command_len + 1)
   {
-    bool to_exit = false;
-    char *next = NULL;
-    bool is_background = false;
-    for (next = input.str + offset; *next != '\0'; ++next)
+    if ((cur_command_len = strcspn(input.str + cur_ptr, ";&")) > 0)
     {
-      if (*next == '&')
+      commands[command_count].is_background = input.str[cur_ptr + cur_command_len] == '&';
+
+      input.str[cur_ptr + cur_command_len] = '\0';
+      string current_command = new_string(strlen(input.str + cur_ptr) + 1);
+      strcpy(current_command.str, input.str + cur_ptr);
+
+      string arguments[MAX_ARGS];
+      int argc = 0;
+      while ((tok.str = strtok(argc == 0 ? current_command.str : NULL, delimiters.str)) != NULL)
       {
-        is_background = true;
-        break;
+        arguments[argc] = new_string(strlen(tok.str));
+        strcpy(arguments[argc++].str, tok.str);
       }
-
-      if (*next == ';')
-      {
-        is_background = false;
-        break;
-      }
+      commands[command_count].argc = argc;
+      commands[command_count].argv = to_cstring_array(arguments, argc);
+      command_count += argc != 0;
     }
-
-    if (*next == '\0')
-      to_exit = true;
-
-    size_t sz = (next - (input.str + offset));
-    string current_command = new_string(sz + 1);
-    strncpy(current_command.str, input.str + offset, sz);
-    current_command.str[sz] = '\0';
-    offset = next - input.str + 1;
-
-    string arguments[MAX_ARGS];
-    int argc = 0;
-    tok.str = strtok(current_command.str, delimiters.str);
-    if (tok.str == NULL)
-      break;
-    arguments[argc] = new_string(strlen(tok.str));
-    strcpy(arguments[argc++].str, tok.str);
-    while ((tok.str = strtok(NULL, delimiters.str)) != NULL)
-    {
-      arguments[argc] = new_string(strlen(tok.str));
-      strcpy(arguments[argc++].str, tok.str);
-    }
-    commands[command_count].argc = argc;
-    commands[command_count].argv = to_cstring_array(arguments, argc);
-    commands[command_count].is_background = is_background;
-    ++command_count;
-
-    if (to_exit)
-      break;
   }
 
   // printf("%i Commands\n\n", command_count);
@@ -74,11 +48,11 @@ void parse_input(string input)
 
   for (int i = 0; i < command_count; ++i)
   {
-    parse_command(commands[i]);
+    exec_command(commands[i]);
   }
 }
 
-void parse_command(command c)
+void exec_command(command c)
 {
   if (strcmp(c.argv[0], "warp") == 0)
   {

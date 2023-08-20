@@ -5,6 +5,6 @@
 #include <stdbool.h>
 
 void parse_input(string input);
-void parse_command(command input);
+void exec_command(command input);
 
 #endif
