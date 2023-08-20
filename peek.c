@@ -101,8 +101,8 @@ void peek(command c)
     }
   }
 
-  printf("flag l is %i\n", flag_l);
-  printf("flag a is %i\n", flag_a);
+  // printf("flag l is %i\n", flag_l);
+  // printf("flag a is %i\n", flag_a);
   if (!found_path)
   {
     strcpy(path.str, ".");
