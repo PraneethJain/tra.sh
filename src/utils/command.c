@@ -1,5 +1,24 @@
 #include "../headers.h"
 
+bool commandify(command *c, string current_command)
+{
+  string delimiters = new_string(128);
+  strcpy(delimiters.str, " \t\n\v\f\r");
+  string tok = new_string(MAX_STR_LEN);
+  string arguments[MAX_ARGS];
+  int argc = 0;
+  while ((tok.str = strtok(argc == 0 ? current_command.str : NULL, delimiters.str)) != NULL)
+  {
+    arguments[argc] = new_string(strlen(tok.str));
+    strcpy(arguments[argc++].str, tok.str);
+  }
+
+  c->argc = argc;
+  c->argv = to_cstring_array(arguments, argc);
+
+  return c->argc != 0;
+}
+
 void parse_input(string input)
 {
   input.str[strcspn(input.str, "\r\n")] = 0;
@@ -10,9 +29,6 @@ void parse_input(string input)
 
   size_t input_length = strlen(input.str);
   size_t cur_ptr = 0;
-  string tok = new_string(MAX_STR_LEN);
-  string delimiters = new_string(128);
-  strcpy(delimiters.str, " \t\n\v\f\r");
   size_t cur_command_len;
   for (size_t cur_ptr = 0; cur_ptr < input_length; cur_ptr += cur_command_len + 1)
   {
@@ -24,16 +40,8 @@ void parse_input(string input)
       string current_command = new_string(strlen(input.str + cur_ptr) + 1);
       strcpy(current_command.str, input.str + cur_ptr);
 
-      string arguments[MAX_ARGS];
-      int argc = 0;
-      while ((tok.str = strtok(argc == 0 ? current_command.str : NULL, delimiters.str)) != NULL)
-      {
-        arguments[argc] = new_string(strlen(tok.str));
-        strcpy(arguments[argc++].str, tok.str);
-      }
-      c.arr[c.size].argc = argc;
-      c.arr[c.size].argv = to_cstring_array(arguments, argc);
-      c.size += argc != 0;
+      // If command is valid then move to next index, otherwise stay at same index.
+      c.size += commandify(&c.arr[c.size], current_command);
     }
   }
 
