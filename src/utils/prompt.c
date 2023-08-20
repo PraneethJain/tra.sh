@@ -27,5 +27,6 @@ void prompt()
     replace(&cwd, homepath, tilde);
   }
 
-  printf("<%s@%s:%s> ", username.str, hostname.str, cwd.str);
+  printf("<" C_GREEN "%s" C_RESET "@" C_BLUE "%s" C_RESET ":" C_YELLOW "%s" C_RESET "> ", username.str, hostname.str,
+         cwd.str);
 }
