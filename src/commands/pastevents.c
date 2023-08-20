@@ -1,5 +1,17 @@
 #include "../headers.h"
 
+void write_history()
+{
+  FILE *history_file = fopen(history_path, "wb");
+  if (history_file == NULL)
+  {
+    // Do error handling
+    return;
+  }
+  fwrite(&h, sizeof(history), 1, history_file);
+  fclose(history_file);
+}
+
 void pastevents(command c)
 {
   if (c.argc == 1)
@@ -11,15 +23,28 @@ void pastevents(command c)
   }
   else if (c.argc == 2)
   {
+    if (strcmp(c.argv[1], "purge") == 0)
+    {
+      h.cur_size = 0;
+      write_history();
+    }
+    else
+    {
+      // Do error handling
+    }
   }
   else if (c.argc == 3)
   {
+  }
+  else
+  {
+    // Do error handling
   }
 }
 
 bool is_valid(string s, commands cs)
 {
-  if (strcmp(s.str, h.arr[0]) == 0)
+  if (h.cur_size > 0 && strcmp(s.str, h.arr[0]) == 0)
     return false;
 
   for (int i = 0; i < cs.size; ++i)
@@ -49,12 +74,5 @@ void add_event(string s, commands cs)
   h.cur_size = min(h.cur_size + 1, HISTORY_SIZE);
   strcpy(h.arr[0], s.str);
 
-  FILE *history_file = fopen(history_path, "wb");
-  if (history_file == NULL)
-  {
-    // Do error handling
-    return;
-  }
-  fwrite(&h, sizeof(history), 1, history_file);
-  fclose(history_file);
+  write_history();
 }
