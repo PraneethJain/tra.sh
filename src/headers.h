@@ -23,6 +23,7 @@
 #include "inc/base.h"
 #include "inc/colors.h"
 #include "inc/command.h"
+#include "inc/pastevents.h"
 #include "inc/peek.h"
 #include "inc/proclore.h"
 #include "inc/procs.h"

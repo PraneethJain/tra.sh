@@ -1,4 +1,4 @@
-all : src/main.o src/utils/base.o src/utils/command.o src/utils/procs.o src/utils/prompt.o src/commands/peek.o src/commands/proclore.o src/commands/system.o src/commands/warp.o
+all : src/main.o src/utils/base.o src/utils/command.o src/utils/procs.o src/utils/prompt.o src/commands/pastevents.o src/commands/peek.o src/commands/proclore.o src/commands/system.o src/commands/warp.o
 	gcc src/main.o src/utils/*.o src/commands/*.o -o ./trash
 
 src/main.o : src/main.c
@@ -15,6 +15,9 @@ src/utils/procs.o : src/utils/procs.c
 
 src/utils/prompt.o : src/utils/prompt.c
 	gcc -c src/utils/prompt.c -o src/utils/prompt.o
+
+src/commands/pastevents.o : src/commands/pastevents.c
+	gcc -c src/commands/pastevents.c -o src/commands/pastevents.o
 
 src/commands/peek.o : src/commands/peek.c
 	gcc -c src/commands/peek.c -o src/commands/peek.o

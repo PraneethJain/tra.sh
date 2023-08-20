@@ -92,6 +92,10 @@ void parse_command(command c)
   {
     proclore(c);
   }
+  else if (strcmp(c.argv[0], "pastevents") == 0)
+  {
+    pastevents(c);
+  }
   else
   {
     system_command(c);
