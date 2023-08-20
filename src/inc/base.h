@@ -23,5 +23,6 @@ void replace(string *s, string a, string b);
 char **to_cstring_array(string *s, size_t len);
 
 int max(int x, int y);
+int min(int x, int y);
 
 #endif
