@@ -2,6 +2,8 @@
 #define __BASE_H
 
 #include <stdio.h>
+#define MAX_ARGS 1024
+#define MAX_STR_LEN 1024
 
 typedef struct string
 {
@@ -19,5 +21,7 @@ typedef struct command
 string new_string(size_t size);
 void replace(string *s, string a, string b);
 char **to_cstring_array(string *s, size_t len);
+
+int max(int x, int y);
 
 #endif

@@ -34,3 +34,8 @@ char **to_cstring_array(string *s, size_t len)
   res[len] = NULL;
   return res;
 }
+
+int max(int x, int y)
+{
+  return x > y ? x : y;
+}
