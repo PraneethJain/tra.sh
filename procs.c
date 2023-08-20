@@ -41,8 +41,8 @@ void remove_processes(process_list p)
   while (cur != NULL)
   {
     int status;
-    waitpid(cur->pid, &status, WNOHANG);
-    if (WIFEXITED(status))
+    waitpid(cur->pid, &status, WNOHANG | WUNTRACED);
+    if (WIFEXITED(status) || WIFSTOPPED(status))
     {
       printf("%s exited normally (%i)\n", cur->c.argv[0], cur->pid);
       remove_process(p, cur->pid);
