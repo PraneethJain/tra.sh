@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 #include "inc/base.h"
+#include "inc/colors.h"
 #include "inc/command.h"
 #include "inc/peek.h"
 #include "inc/proclore.h"
