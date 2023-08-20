@@ -2,7 +2,7 @@
 
 string get_perms(struct stat *info)
 {
-  string perms = new_string(11);
+  string perms = new_string(MAX_STR_LEN);
   // First character in permissions:
   // -    Regular file
   // b    Block special file
@@ -12,31 +12,31 @@ string get_perms(struct stat *info)
   // p    FIFO
   // s    Socket
   if (S_ISDIR(info->st_mode))
-    strcat(perms.str, "d");
+    strcat(perms.str, C_BLUE "d" C_RESET);
   else if (S_ISCHR(info->st_mode))
     strcat(perms.str, "c");
   else if (S_ISBLK(info->st_mode))
     strcat(perms.str, "b");
   else if (S_ISREG(info->st_mode))
-    strcat(perms.str, "-");
+    strcat(perms.str, ".");
   else if (S_ISFIFO(info->st_mode))
     strcat(perms.str, "p");
   else if (S_ISLNK(info->st_mode))
-    strcat(perms.str, "l");
+    strcat(perms.str, C_CYAN "l" C_RESET);
   else if (S_ISSOCK(info->st_mode))
     strcat(perms.str, "s");
   else
     strcat(perms.str, "?");
 
-  strcat(perms.str, info->st_mode & S_IRUSR ? "r" : "-");
-  strcat(perms.str, info->st_mode & S_IWUSR ? "w" : "-");
-  strcat(perms.str, info->st_mode & S_IXUSR ? "x" : "-");
-  strcat(perms.str, info->st_mode & S_IRGRP ? "r" : "-");
-  strcat(perms.str, info->st_mode & S_IWGRP ? "w" : "-");
-  strcat(perms.str, info->st_mode & S_IXGRP ? "x" : "-");
-  strcat(perms.str, info->st_mode & S_IROTH ? "r" : "-");
-  strcat(perms.str, info->st_mode & S_IWOTH ? "w" : "-");
-  strcat(perms.str, info->st_mode & S_IXOTH ? "x" : "-");
+  strcat(perms.str, info->st_mode & S_IRUSR ? C_GREEN "r" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IWUSR ? C_YELLOW "w" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IXUSR ? C_RED "x" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IRGRP ? C_GREEN "r" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IWGRP ? C_YELLOW "w" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IXGRP ? C_RED "x" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IROTH ? C_GREEN "r" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IWOTH ? C_YELLOW "w" C_RESET : "-");
+  strcat(perms.str, info->st_mode & S_IXOTH ? C_RED "x" C_RESET : "-");
 
   return perms;
 }
@@ -45,7 +45,7 @@ string get_datetime(struct stat *info)
 {
   // When last modification is more than 6 months ago, year is shown instead of time
   string datetime = new_string(128);
-  strftime(datetime.str, datetime.size, time(0) - info->st_mtime < 15768000 ? "%h %d %H:%M" : "%h %d %Y",
+  strftime(datetime.str, datetime.size, time(0) - info->st_mtime < 15768000 ? "%h %d %H:%M" : "%h %d %Y ",
            localtime(&info->st_mtime));
 
   return datetime;
@@ -67,7 +67,12 @@ void print_long(char *path, const char *name)
   printf("%8s ", getgrgid(info.st_gid)->gr_name);
   printf("%12li ", info.st_size); // Enough space for a terabyte
   printf("%s ", get_datetime(&info).str);
-  printf("%s", name);
+  if (S_ISDIR(info.st_mode))
+    printf(C_BLUE "%s" C_RESET, name);
+  else if (info.st_mode & S_IXUSR)
+    printf(C_GREEN "%s" C_RESET, name);
+  else
+    printf(C_WHITE "%s" C_RESET, name);
   printf("\n");
 }
 
