@@ -28,10 +28,17 @@ void warp(command c)
         // Do error handling
       }
 
-      if (strcmp(c.argv[i], "~") == 0)
+      if (c.argv[i][0] == '~')
       {
         strcpy(lastpath.str, cwd.str);
-        chdir(homepath.str);
+        string abs_path = new_string(PATH_MAX);
+        strcpy(abs_path.str, homepath.str);
+        strcat(abs_path.str, c.argv[i] + 1);
+        if (chdir(abs_path.str) != 0)
+        {
+          printf("Cannot warp to %s\n", c.argv[i]);
+          break;
+        }
       }
       else if (strcmp(c.argv[i], "-") == 0)
       {
