@@ -1,5 +1,5 @@
-all: main.o prompt.o base.o command.o warp.o system.o peek.o proclore.o
-	gcc main.o prompt.o base.o command.o warp.o system.o peek.o proclore.o -o trash
+all: main.o prompt.o base.o command.o warp.o system.o peek.o proclore.o procs.o
+	gcc main.o prompt.o base.o command.o warp.o system.o peek.o proclore.o procs.o -o trash
 
 main.o: main.c
 	gcc -c main.c -o main.o
@@ -24,6 +24,9 @@ peek.o: peek.c
 
 proclore.o: proclore.c
 	gcc -c proclore.c -o proclore.o
+
+procs.o: procs.c
+	gcc -c procs.c -o procs.o
 
 clean:
 	rm *.o

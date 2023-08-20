@@ -15,6 +15,7 @@ void system_command(command c)
     if (c.is_background)
     {
       printf("%i\n", pid);
+      insert_process(p, c, pid);
     }
     else
     {

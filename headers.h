@@ -24,11 +24,13 @@
 #include "command.h"
 #include "peek.h"
 #include "proclore.h"
+#include "procs.h"
 #include "prompt.h"
 #include "system.h"
 #include "warp.h"
 
 extern string homepath;
 extern string lastpath;
+extern process_list p;
 
 #endif
