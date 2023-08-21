@@ -75,38 +75,29 @@ void insert(commands *cs, int h_idx, int cs_idx)
 
 void add_event(commands cs)
 {
-  bool to_add = true;
-  int i = 0;
-  while (i < cs.size)
+  for (int i = 0; i < cs.size; ++i)
   {
     command c = cs.arr[i];
     if (strcmp(c.argv[0], "pastevents") == 0)
     {
-      to_add = false;
-      if (c.argc == 3)
+      if (c.argc == 3 && strcmp(c.argv[1], "execute") == 0 && is_numeric(c.argv[2]))
       {
-        if (strcmp(c.argv[1], "execute") == 0)
+        char *temp;
+        int idx = strtoll(c.argv[2], &temp, 10) - 1;
+        if (idx >= 0 && idx <= 14)
         {
-          if (is_numeric(c.argv[2]))
-          {
-            char *temp;
-            int idx = strtoll(c.argv[2], &temp, 10) - 1;
-            if (idx >= 0 && idx <= 14)
-            {
-              to_add = true;
-              insert(&cs, idx, i);
-              i += h.arr[idx].size;
-              continue;
-            }
-          }
+          insert(&cs, idx, i);
+          i += h.arr[idx].size;
+          continue;
         }
       }
+      else
+      {
+        // Dont add to pastevents
+        return;
+      }
     }
-    ++i;
   }
-
-  if (!to_add)
-    return;
 
   for (int i = min((int)h.cur_size - 1, HISTORY_SIZE - 2); i >= 0; --i)
     h.arr[i + 1] = h.arr[i];
