@@ -64,6 +64,13 @@ void proclore(command c)
   {
     // Do error handling
   }
+
+  if (strstr(exe_path.str, homepath.str) == exe_path.str) // If cwd starts with homepath
+  {
+    string tilde = new_string(2);
+    tilde.str = "~\0";
+    replace(&exe_path, homepath, tilde);
+  }
   pid_t term_gid = getpgrp();
   printf("pid: %i\n", pid);
   printf("Process Status: %c%c\n", status, term_gid == process_gid ? '+' : ' ');
