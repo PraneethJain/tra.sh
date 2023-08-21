@@ -18,61 +18,99 @@ void pastevents(command c)
   {
     for (int i = (int)h.cur_size - 1; i >= 0; --i)
     {
-      printf("%s\n", h.arr[i]);
+      print_commands(h.arr[i]);
     }
   }
   else if (c.argc == 2)
   {
-    if (strcmp(c.argv[1], "purge") == 0)
-    {
-      h.cur_size = 0;
-      write_history();
-    }
-    else
+    if (strcmp(c.argv[1], "purge") != 0)
     {
       // Do error handling
+      return;
     }
+
+    h.cur_size = 0;
+    write_history();
   }
   else if (c.argc == 3)
   {
-  }
-  else
-  {
-    // Do error handling
+    if (!is_numeric(c.argv[2]))
+    {
+      // Do error handling
+      return;
+    }
+
+    char *temp;
+    int idx = strtoll(c.argv[2], &temp, 10) - 1;
+    if (idx < 0 || idx > 14)
+    {
+      // Do error handling
+      return;
+    }
+
+    commands replacement = h.arr[idx];
+    for (int i = 0; i < replacement.size; ++i)
+    {
+      exec_command(replacement.arr[i]);
+    }
   }
 }
 
-bool is_valid(string s, commands cs)
+void shift_one(commands *cs, int start_idx)
 {
-  if (h.cur_size > 0 && strcmp(s.str, h.arr[0]) == 0)
-    return false;
+  for (int i = cs->size - 1; i >= start_idx; --i)
+    cs->arr[i + 1] = cs->arr[i];
+  ++cs->size;
+}
 
-  for (int i = 0; i < cs.size; ++i)
+void insert(commands *cs, int h_idx, int cs_idx)
+{
+  cs->arr[cs_idx] = h.arr[h_idx].arr[0];
+  for (int i = 1; i < h.arr[h_idx].size; ++i)
+  {
+    shift_one(cs, cs_idx + i);
+    cs->arr[cs_idx + i] = h.arr[h_idx].arr[i];
+  }
+}
+
+void add_event(commands cs)
+{
+  bool to_add = true;
+  int i = 0;
+  while (i < cs.size)
   {
     command c = cs.arr[i];
     if (strcmp(c.argv[0], "pastevents") == 0)
     {
-      if (c.argc == 1)
-        return false;
-      else if (strcmp(c.argv[1], "purge") == 0)
-        return false;
+      to_add = false;
+      if (c.argc == 3)
+      {
+        if (strcmp(c.argv[1], "execute") == 0)
+        {
+          if (is_numeric(c.argv[2]))
+          {
+            char *temp;
+            int idx = strtoll(c.argv[2], &temp, 10) - 1;
+            if (idx >= 0 && idx <= 14)
+            {
+              to_add = true;
+              insert(&cs, idx, i);
+              i += h.arr[idx].size;
+              continue;
+            }
+          }
+        }
+      }
     }
+    ++i;
   }
 
-  return true;
-}
-
-void add_event(string s, commands cs)
-{
-  if (!is_valid(s, cs))
+  if (!to_add)
     return;
 
   for (int i = min((int)h.cur_size - 1, HISTORY_SIZE - 2); i >= 0; --i)
-  {
-    strcpy(h.arr[i + 1], h.arr[i]);
-  }
+    h.arr[i + 1] = h.arr[i];
   h.cur_size = min(h.cur_size + 1, HISTORY_SIZE);
-  strcpy(h.arr[0], s.str);
-
+  h.arr[0] = cs;
   write_history();
 }

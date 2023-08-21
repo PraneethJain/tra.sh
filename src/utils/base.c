@@ -35,6 +35,20 @@ char **to_cstring_array(string *s, size_t len)
   return res;
 }
 
+void print_command(command c)
+{
+  for (int i = 0; i < c.argc; ++i)
+    printf("%s ", c.argv[i]);
+  printf(c.is_background ? "& " : "; ");
+}
+
+void print_commands(commands cs)
+{
+  for (int i = 0; i < cs.size; ++i)
+    print_command(cs.arr[i]);
+  printf("\n");
+}
+
 int max(int x, int y)
 {
   return x > y ? x : y;
@@ -43,4 +57,13 @@ int max(int x, int y)
 int min(int x, int y)
 {
   return x < y ? x : y;
+}
+
+bool is_numeric(char *s)
+{
+  for (int i = 0; s[i] != '\0'; ++i)
+    if (s[i] < '0' || s[i] > '9')
+      return false;
+
+  return true;
 }

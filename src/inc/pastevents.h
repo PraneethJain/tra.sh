@@ -6,11 +6,11 @@
 
 typedef struct history
 {
-  char arr[HISTORY_SIZE][MAX_STR_LEN];
+  commands arr[HISTORY_SIZE];
   size_t cur_size;
 } history;
 
 void pastevents(command c);
-void add_event(string s, commands cs);
+void add_event(commands cs);
 
 #endif

@@ -14,9 +14,7 @@ bool commandify(command *c, string current_command)
 
 void parse_input(string input)
 {
-  input.str[strcspn(input.str, "\r\n")] = 0;
-  string input_copy = new_string(strlen(input.str));
-  strcpy(input_copy.str, input.str);
+  input.str[strcspn(input.str, "\r\n")] = '\0';
   commands c;
   c.size = 0;
 
@@ -38,23 +36,22 @@ void parse_input(string input)
     }
   }
 
-  printf("%zu Commands\n\n", c.size);
   for (int i = 0; i < c.size; ++i)
-  {
-    printf("Command name: %s\n", c.arr[i].argv[0]);
-    for (int j = 1; j < c.arr[i].argc; ++j)
-    {
-      printf("arg%i: %s\n", j, c.arr[i].argv[j]);
-    }
-    printf("Is background: %i\n", c.arr[i].is_background);
-    printf("\n");
-  }
-
-  for (int i = 0; i < c.size; ++i)
-  {
     exec_command(c.arr[i]);
-  }
-  // add_event(input_copy, c); // strtok modifies the input string, so a copy is used here.
+
+  // printf("%zu Commands\n\n", c.size);
+  // for (int i = 0; i < c.size; ++i)
+  // {
+  //   printf("Command name: %s\n", c.arr[i].argv[0]);
+  //   for (int j = 1; j < c.arr[i].argc; ++j)
+  //   {
+  //     printf("arg%i: %s\n", j, c.arr[i].argv[j]);
+  //   }
+  //   printf("Is background: %i\n", c.arr[i].is_background);
+  //   printf("\n");
+  // }
+  //
+  add_event(c);
 }
 
 void exec_command(command c)

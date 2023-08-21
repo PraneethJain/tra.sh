@@ -29,7 +29,12 @@ string new_string(size_t size);
 void replace(string *s, string a, string b);
 char **to_cstring_array(string *s, size_t len);
 
+void print_command(command c);
+void print_commands(commands cs);
+
 int max(int x, int y);
 int min(int x, int y);
+
+bool is_numeric(char *s);
 
 #endif
