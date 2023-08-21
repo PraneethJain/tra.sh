@@ -35,18 +35,42 @@ char **to_cstring_array(string *s, size_t len)
   return res;
 }
 
-void print_command(command c)
+void print_command(command *c)
 {
-  for (int i = 0; i < c.argc; ++i)
-    printf("%s ", c.argv[i]);
-  printf(c.is_background ? "& " : "; ");
+  for (int i = 0; i < c->argc; ++i)
+    printf("%s ", c->argv[i]);
+  printf(c->is_background ? "& " : "; ");
 }
 
-void print_commands(commands cs)
+void print_commands(commands *cs)
 {
-  for (int i = 0; i < cs.size; ++i)
-    print_command(cs.arr[i]);
+  for (int i = 0; i < cs->size; ++i)
+    print_command(&cs->arr[i]);
   printf("\n");
+}
+
+bool command_equal(command *c1, command *c2)
+{
+  if (c1->argc != c2->argc || c1->is_background != c2->is_background)
+    return false;
+
+  for (int i = 0; i < c1->argc; ++i)
+    if (strcmp(c1->argv[i], c2->argv[i]) != 0)
+      return false;
+
+  return true;
+}
+
+bool commands_equal(commands *cs1, commands *cs2)
+{
+  if (cs1->size != cs2->size)
+    return false;
+
+  for (int i = 0; i < cs1->size; ++i)
+    if (!command_equal(&cs1->arr[i], &cs2->arr[i]))
+      return false;
+
+  return true;
 }
 
 int max(int x, int y)

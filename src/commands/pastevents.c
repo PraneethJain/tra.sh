@@ -18,7 +18,7 @@ void pastevents(command c)
   {
     for (int i = (int)h.cur_size - 1; i >= 0; --i)
     {
-      print_commands(h.arr[i]);
+      print_commands(&h.arr[i]);
     }
   }
   else if (c.argc == 2)
