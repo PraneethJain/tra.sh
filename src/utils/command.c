@@ -5,16 +5,9 @@ bool commandify(command *c, string current_command)
   string delimiters = new_string(128);
   strcpy(delimiters.str, " \t\n\v\f\r");
   string tok = new_string(MAX_STR_LEN);
-  string arguments[MAX_ARGS];
-  int argc = 0;
-  while ((tok.str = strtok(argc == 0 ? current_command.str : NULL, delimiters.str)) != NULL)
-  {
-    arguments[argc] = new_string(strlen(tok.str));
-    strcpy(arguments[argc++].str, tok.str);
-  }
-
-  c->argc = argc;
-  c->argv = to_cstring_array(arguments, argc);
+  c->argc = 0;
+  while ((tok.str = strtok(c->argc == 0 ? current_command.str : NULL, delimiters.str)) != NULL)
+    strcpy(c->argv[c->argc++], tok.str);
 
   return c->argc != 0;
 }
@@ -45,23 +38,23 @@ void parse_input(string input)
     }
   }
 
-  // printf("%i c\n\n", command_count);
-  // for (int i = 0; i < command_count; ++i)
-  // {
-  //   printf("Command name: %s\n", c[i].argv[0]);
-  //   for (int j = 1; j < c[i].argc; ++j)
-  //   {
-  //     printf("arg%i: %s\n", j, c[i].argv[j]);
-  //   }
-  //   printf("Is background: %i\n", c[i].is_background);
-  //   printf("\n");
-  // }
+  printf("%zu Commands\n\n", c.size);
+  for (int i = 0; i < c.size; ++i)
+  {
+    printf("Command name: %s\n", c.arr[i].argv[0]);
+    for (int j = 1; j < c.arr[i].argc; ++j)
+    {
+      printf("arg%i: %s\n", j, c.arr[i].argv[j]);
+    }
+    printf("Is background: %i\n", c.arr[i].is_background);
+    printf("\n");
+  }
 
-  add_event(input_copy, c); // strtok modifies the input string, so a copy is used here.
   for (int i = 0; i < c.size; ++i)
   {
     exec_command(c.arr[i]);
   }
+  // add_event(input_copy, c); // strtok modifies the input string, so a copy is used here.
 }
 
 void exec_command(command c)

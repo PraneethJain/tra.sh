@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #define MAX_COMMANDS 128
-#define MAX_ARGS 1024
+#define MAX_ARGS 16
 #define MAX_STR_LEN 1024
 
 typedef struct string
@@ -15,7 +15,7 @@ typedef struct string
 typedef struct command
 {
   int argc;
-  char **argv;
+  char argv[MAX_ARGS][MAX_STR_LEN];
   bool is_background;
 } command;
 
