@@ -75,6 +75,9 @@ void insert(commands *cs, int h_idx, int cs_idx)
 
 void add_event(commands cs)
 {
+  if (cs.size == 0)
+    return;
+
   for (int i = 0; i < cs.size; ++i)
   {
     command c = cs.arr[i];
