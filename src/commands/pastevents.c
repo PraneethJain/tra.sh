@@ -99,6 +99,9 @@ void add_event(commands cs)
     }
   }
 
+  if (h.cur_size > 0 && commands_equal(&cs, &h.arr[0]))
+    return;
+
   for (int i = min((int)h.cur_size - 1, HISTORY_SIZE - 2); i >= 0; --i)
     h.arr[i + 1] = h.arr[i];
   h.cur_size = min(h.cur_size + 1, HISTORY_SIZE);
