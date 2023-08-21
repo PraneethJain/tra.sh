@@ -113,6 +113,13 @@ void peek(command c)
     strcpy(path.str, ".");
   }
 
+  if (path.str[0] == '~')
+  {
+    string tilde = new_string(2);
+    strcpy(tilde.str, "~\0");
+    replace(&path, tilde, homepath);
+  }
+
   struct dirent **entries;
   int n = scandir(path.str, &entries, 0, alphasort);
   if (n < 0)
