@@ -1,4 +1,4 @@
-all : src/main.o src/utils/base.o src/utils/command.o src/utils/procs.o src/utils/prompt.o src/commands/pastevents.o src/commands/peek.o src/commands/proclore.o src/commands/system.o src/commands/warp.o
+all : src/main.o src/utils/base.o src/utils/command.o src/utils/procs.o src/utils/prompt.o src/commands/pastevents.o src/commands/peek.o src/commands/proclore.o src/commands/seek.o src/commands/system.o src/commands/warp.o
 	gcc src/main.o src/utils/*.o src/commands/*.o -o ./trash
 
 src/main.o : src/main.c
@@ -24,6 +24,9 @@ src/commands/peek.o : src/commands/peek.c
 
 src/commands/proclore.o : src/commands/proclore.c
 	gcc -c src/commands/proclore.c -o src/commands/proclore.o
+
+src/commands/seek.o : src/commands/seek.c
+	gcc -c src/commands/seek.c -o src/commands/seek.o
 
 src/commands/system.o : src/commands/system.c
 	gcc -c src/commands/system.c -o src/commands/system.o

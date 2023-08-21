@@ -72,6 +72,10 @@ void exec_command(command c)
   {
     pastevents(c);
   }
+  else if (strcmp(c.argv[0], "seek") == 0)
+  {
+    seek(c);
+  }
   else
   {
     system_command(c);
