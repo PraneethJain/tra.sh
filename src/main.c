@@ -29,8 +29,8 @@ int main()
   {
     remove_processes(p);
     prompt();
-    string input = new_string(4096);
-    fgets(input.str, 4096, stdin);
+    string input = new_string(MAX_STR_LEN);
+    fgets(input.str, input.size, stdin);
     parse_input(input);
   }
 }
