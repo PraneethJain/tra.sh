@@ -38,12 +38,6 @@ void destroy()
 
 int main()
 {
-
-  // To do (till Part A):
-  // time taken in prompt
-  // peek block size
-  // seek
-
   init();
   while (!EXIT)
   {
