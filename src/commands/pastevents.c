@@ -110,7 +110,7 @@ void add_event(commands cs)
         if (idx >= 0 && idx <= 14)
         {
           insert(&cs, idx, i);
-          i += h.arr[idx].size;
+          i += h.arr[idx].size - 1;
           continue;
         }
       }
