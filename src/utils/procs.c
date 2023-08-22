@@ -29,6 +29,7 @@ void remove_process(process_list p, pid_t pid)
     process_list next = cur->next;
     if (cur->pid == pid)
     {
+      printf("%s exited normally (%i)\n", cur->c.argv[0], cur->pid);
       free(cur);
       prev->next = next;
       return;
@@ -39,20 +40,10 @@ void remove_process(process_list p, pid_t pid)
 
 void remove_processes(process_list p)
 {
-  process_list cur = p->next;
-  while (cur != NULL)
-  {
-    int status;
-    waitpid(cur->pid, &status, WNOHANG | WUNTRACED);
-    process_list next = cur->next;
-    if (WIFEXITED(status) || WIFSTOPPED(status))
-    {
-      printf("%s exited normally (%i)\n", cur->c.argv[0], cur->pid);
-      remove_process(p, cur->pid);
-    }
-
-    cur = next;
-  }
+  pid_t to_kill;
+  int status;
+  while ((to_kill = waitpid(-1, &status, WNOHANG)) > 0)
+    remove_process(p, to_kill);
 }
 
 void free_process_list(process_list p)
