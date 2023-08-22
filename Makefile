@@ -1,38 +1,46 @@
-all : src/main.o src/utils/base.o src/utils/command.o src/utils/procs.o src/utils/prompt.o src/commands/pastevents.o src/commands/peek.o src/commands/proclore.o src/commands/seek.o src/commands/system.o src/commands/warp.o
-	gcc src/main.o src/utils/*.o src/commands/*.o -o ./trash
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror
 
-src/main.o : src/main.c
-	gcc -c src/main.c -o src/main.o
+SRCS = src/main.c src/commands/pastevents.c src/commands/peek.c src/commands/proclore.c src/commands/seek.c src/commands/system.c src/commands/warp.c src/utils/base.c src/utils/command.c src/utils/procs.c src/utils/prompt.c 
+OBJS = $(SRCS:.c=.o)
+EXE = trash
 
-src/utils/base.o : src/utils/base.c
-	gcc -c src/utils/base.c -o src/utils/base.o
+DBGDIR = debug
+DBGEXE = $(DBGDIR)/$(EXE)
+DBGOBJS = $(addprefix $(DBGDIR)/, $(OBJS))
+DBGCFLAGS = -g -O0 -fsanitize=address,undefined -D DEBUG
 
-src/utils/command.o : src/utils/command.c
-	gcc -c src/utils/command.c -o src/utils/command.o
+RELDIR = release
+RELEXE = $(RELDIR)/$(EXE)
+RELOBJS = $(addprefix $(RELDIR)/, $(OBJS))
+RELCFLAGS = -O3 -D NDEBUG
 
-src/utils/procs.o : src/utils/procs.c
-	gcc -c src/utils/procs.c -o src/utils/procs.o
+all: prep release
 
-src/utils/prompt.o : src/utils/prompt.c
-	gcc -c src/utils/prompt.c -o src/utils/prompt.o
+debug: $(DBGEXE)
 
-src/commands/pastevents.o : src/commands/pastevents.c
-	gcc -c src/commands/pastevents.c -o src/commands/pastevents.o
+$(DBGEXE): $(DBGOBJS)
+	$(CC) $(CFLAGS) $(DBGCFLAGS) -o $(DBGEXE) $^
 
-src/commands/peek.o : src/commands/peek.c
-	gcc -c src/commands/peek.c -o src/commands/peek.o
+$(DBGDIR)/%.o: %.c
+	$(CC) -c $(CFLAGS) $(DBGCFLAGS) -o $@ $<
 
-src/commands/proclore.o : src/commands/proclore.c
-	gcc -c src/commands/proclore.c -o src/commands/proclore.o
+release: $(RELEXE)
 
-src/commands/seek.o : src/commands/seek.c
-	gcc -c src/commands/seek.c -o src/commands/seek.o
+$(RELEXE): $(RELOBJS)
+	$(CC) $(CFLAGS) $(RELCFLAGS) -o $(RELEXE) $^
 
-src/commands/system.o : src/commands/system.c
-	gcc -c src/commands/system.c -o src/commands/system.o
+$(RELDIR)/%.o: %.c
+	$(CC) -c $(CFLAGS) $(RELCFLAGS) -o $@ $<
 
-src/commands/warp.o : src/commands/warp.c
-	gcc -c src/commands/warp.c -o src/commands/warp.o
+prep:
+	@mkdir -p $(DBGDIR) $(RELDIR)
+	@mkdir -p $(DBGDIR)/src $(RELDIR)/src
+	@mkdir -p $(DBGDIR)/src/commands $(RELDIR)/src/commands
+	@mkdir -p $(DBGDIR)/src/utils $(RELDIR)/src/utils
+
+remake: clean all
 
 clean:
-	rm -rf src/*.o src/utils/*.o src/commands/*.o trash
+	rm -f $(RELEXE) $(RELOBJS) $(DBGEXE) $(DBGOBJS)
+
