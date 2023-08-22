@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=gnu2x
+CFLAGS = -Wall -Wextra -Werror
 
 SRCS = src/main.c src/commands/pastevents.c src/commands/peek.c src/commands/proclore.c src/commands/seek.c src/commands/system.c src/commands/warp.c src/utils/base.c src/utils/command.c src/utils/procs.c src/utils/prompt.c 
 OBJS = $(SRCS:.c=.o)
