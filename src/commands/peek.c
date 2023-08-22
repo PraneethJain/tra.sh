@@ -61,12 +61,14 @@ void print_long(char *path, const char *name)
   struct stat info;
   lstat(cur.str, &info);
 
-  printf("%s ", get_perms(&info).str);
+  string perms = get_perms(&info);
+  string datetime = get_datetime(&info);
+  printf("%s ", perms.str);
   printf(" %4li ", info.st_nlink);
   printf("%8s ", getpwuid(info.st_uid)->pw_name);
   printf("%8s ", getgrgid(info.st_gid)->gr_name);
   printf("%12li ", info.st_size); // Enough space for a terabyte
-  printf("%s ", get_datetime(&info).str);
+  printf("%s ", datetime.str);
   if (S_ISDIR(info.st_mode))
     printf(C_BLUE "%s" C_RESET, name);
   else if (info.st_mode & S_IXUSR)
@@ -74,6 +76,10 @@ void print_long(char *path, const char *name)
   else
     printf(C_WHITE "%s" C_RESET, name);
   printf("\n");
+
+  free(cur.str);
+  free(perms.str);
+  free(datetime.str);
 }
 
 void peek(command c)
@@ -114,11 +120,7 @@ void peek(command c)
   }
 
   if (path.str[0] == '~')
-  {
-    string tilde = new_string(2);
-    strcpy(tilde.str, "~\0");
     replace(&path, tilde, homepath);
-  }
 
   struct dirent **entries;
   int n = scandir(path.str, &entries, 0, alphasort);
@@ -141,6 +143,11 @@ void peek(command c)
         print_long(path.str, entries[i]->d_name);
       else
         printf("%s\n", entries[i]->d_name);
+
+      free(entries[i]);
     }
+    free(entries);
   }
+
+  free(path.str);
 }
