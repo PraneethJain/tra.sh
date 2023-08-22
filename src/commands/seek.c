@@ -33,6 +33,7 @@ void find(string path)
         printf(C_BLUE "%s\n" C_RESET, next_path.str);
       }
       find(next_path);
+      free(next_path.str);
     }
     else
     {
@@ -42,6 +43,7 @@ void find(string path)
       {
         printf(C_GREEN "%s\n" C_RESET, next_name.str);
       }
+      free(next_name.str);
     }
   }
 
@@ -108,4 +110,5 @@ void seek(command c)
   }
 
   find(path);
+  free(name.str);
 }
