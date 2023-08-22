@@ -4,6 +4,18 @@ bool flag_d;
 bool flag_f;
 bool flag_e;
 string name;
+string last_found_path;
+int count;
+size_t path_length;
+
+typedef enum Status
+{
+  found_dir,
+  found_file,
+  found_none
+} Status;
+
+Status status;
 
 void find(string path)
 {
@@ -30,7 +42,10 @@ void find(string path)
       snprintf(next_path.str, next_path.size, "%s%s", path.str, entry->d_name);
       if ((flag_d || (!flag_d && !flag_f)) && strstr(entry->d_name, name.str) != NULL)
       {
-        printf(C_BLUE "%s\n" C_RESET, next_path.str);
+        ++count;
+        status = found_dir;
+        strcpy(last_found_path.str, next_path.str);
+        printf(C_BLUE "%s\n" C_RESET, next_path.str + path_length);
       }
       find(next_path);
       free(next_path.str);
@@ -41,7 +56,10 @@ void find(string path)
       snprintf(next_name.str, next_name.size, "%s%s", path.str, entry->d_name);
       if ((flag_f || (!flag_d && !flag_f)) && strstr(entry->d_name, name.str) != NULL)
       {
-        printf(C_GREEN "%s\n" C_RESET, next_name.str);
+        ++count;
+        status = found_file;
+        strcpy(last_found_path.str, next_name.str);
+        printf(C_GREEN "%s\n" C_RESET, next_name.str + path_length);
       }
       free(next_name.str);
     }
@@ -59,7 +77,10 @@ void seek(command c)
   flag_f = false;
   flag_e = false;
   name = new_string(MAX_STR_LEN);
+  last_found_path = new_string(MAX_STR_LEN);
   string path = new_string(MAX_STR_LEN);
+  status = found_none;
+  count = 0;
   bool found_name = false;
   bool found_path = false;
   for (int i = 1; i < c.argc; ++i)
@@ -83,11 +104,7 @@ void seek(command c)
     {
       strcpy(path.str, c.argv[i]);
       if (path.str[0] == '~')
-      {
-        string tilde = new_string(2);
-        strcpy(tilde.str, "~\0");
         replace(&path, tilde, homepath);
-      }
       found_path = true;
     }
     else
@@ -109,6 +126,30 @@ void seek(command c)
     return;
   }
 
+  path_length = strlen(path.str);
+  path_length += path.str[path_length - 1] != '/';
   find(path);
+
+  if (flag_e && count == 1)
+  {
+    if (status == found_dir)
+    {
+      if (chdir(last_found_path.str) != 0)
+      {
+        printf("Missing permissions for task!\n");
+      }
+    }
+    else if (status == found_file)
+    {
+      FILE *f = fopen(last_found_path.str, "r");
+      if (f == NULL)
+      {
+        printf("Missing permissions for task!\n");
+      }
+      char c = 0;
+      while ((c = fgetc(f)) != EOF)
+        printf("%c", c);
+    }
+  }
   free(name.str);
 }
