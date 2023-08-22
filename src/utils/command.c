@@ -1,13 +1,11 @@
 #include "../headers.h"
 
-bool commandify(command *c, string current_command)
+bool commandify(command *c, string *current_command)
 {
-  string delimiters = new_string(128);
-  strcpy(delimiters.str, " \t\n\v\f\r");
-  string tok = new_string(MAX_STR_LEN);
+  char *tok;
   c->argc = 0;
-  while ((tok.str = strtok(c->argc == 0 ? current_command.str : NULL, delimiters.str)) != NULL)
-    strcpy(c->argv[c->argc++], tok.str);
+  while ((tok = strtok(c->argc == 0 ? current_command->str : NULL, delimiters.str)) != NULL)
+    strcpy(c->argv[c->argc++], tok);
 
   return c->argc != 0;
 }
@@ -31,7 +29,8 @@ void parse_input(string input)
       strcpy(current_command.str, input.str + cur_ptr);
 
       // If command is valid then move to next index, otherwise stay at same index.
-      c.size += commandify(&c.arr[c.size], current_command);
+      c.size += commandify(&c.arr[c.size], &current_command);
+      free(current_command.str);
     }
   }
 

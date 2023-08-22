@@ -17,6 +17,7 @@ void proclore(command c)
   string process_path = new_string(PATH_MAX);
   snprintf(process_path.str, process_path.size, "/proc/%i/stat", pid);
   FILE *process_file = fopen(process_path.str, "r");
+  free(process_path.str);
   if (process_file == NULL)
   {
     printf("No such process\n");
@@ -56,6 +57,7 @@ void proclore(command c)
     }
     ++i;
   }
+  free(process_file_contents.str);
 
   string exe_proc_path = new_string(32);
   snprintf(exe_proc_path.str, exe_proc_path.size, "/proc/%i/exe", pid);
@@ -64,6 +66,7 @@ void proclore(command c)
   {
     // Do error handling
   }
+  free(exe_proc_path.str);
 
   if (strstr(exe_path.str, homepath.str) == exe_path.str) // If cwd starts with homepath
   {
@@ -77,4 +80,5 @@ void proclore(command c)
   printf("Process Group: %i\n", process_gid);
   printf("Virtual Memory: %zu\n", vmem);
   printf("Executable Path: %s\n", exe_path.str);
+  free(exe_path.str);
 }

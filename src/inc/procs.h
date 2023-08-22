@@ -15,5 +15,6 @@ typedef process_list_st *process_list;
 process_list init_process_list();
 void insert_process(process_list p, command c, pid_t pid);
 void remove_processes(process_list p);
+void free_process_list(process_list p);
 
 #endif

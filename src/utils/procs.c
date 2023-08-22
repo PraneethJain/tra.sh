@@ -52,3 +52,15 @@ void remove_processes(process_list p)
   }
   printf("\n");
 }
+
+void free_process_list(process_list p)
+{
+  process_list cur = p->next;
+  while (cur != NULL)
+  {
+    process_list temp = cur->next;
+    free(cur);
+    cur = temp;
+  }
+  free(p);
+}
