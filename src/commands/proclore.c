@@ -28,54 +28,11 @@ void proclore(command c)
   pid_t process_gid = 0;
   size_t vmem = 0;
   char buf[MAX_STR_LEN];
-  for (int i = 2; i < 24; ++i)
-  {
-    if (i == 3)
-      fscanf(process_file, "%c", &status);
-    else if (i == 5)
-      fscanf(process_file, "%i", &process_gid);
-    else if (i == 23)
-      fscanf(process_file, "%zu", &vmem);
-    else
-      fscanf(process_file, "%s", buf);
-  }
+  fscanf(process_file, "%s %[^)]%c %c %s %i %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %zu", buf, buf, &buf[0],
+         &status, buf, &process_gid, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf,
+         buf, &vmem);
 
-  // string process_file_contents = new_string(MAX_STR_LEN);
-  // if (fread(process_file_contents.str, 1, process_file_contents.size, process_file) == 0)
-  // {
-  //   printf("Could not access process details\n");
-  //   fclose(process_file);
-  //   return;
-  // }
-  // fclose(process_file);
-
-  // char *tok;
-  // tok = strtok(process_file_contents.str, " ");
-  // int i = 2;
-  // char status = '?';
-  // pid_t process_gid = 0;
-  // size_t vmem = 0;
-  // while ((tok = strtok(NULL, " ")) != NULL)
-  // {
-  //   switch (i)
-  //   {
-  //   case 3:
-  //     status = tok[0];
-  //     break;
-  //
-  //   case 5:
-  //     process_gid = strtol(tok, &temp, 10);
-  //     break;
-  //
-  //   case 23:
-  //     vmem = strtol(tok, &temp, 10);
-  //     break;
-  //   }
-  //   ++i;
-  // }
-  // free(process_file_contents.str);
-
-  string exe_proc_path = new_string(32);
+  string exe_proc_path = new_string(MAX_STR_LEN);
   snprintf(exe_proc_path.str, exe_proc_path.size, "/proc/%i/exe", pid);
   string exe_path = new_string(MAX_STR_LEN);
   int res = readlink(exe_proc_path.str, exe_path.str, exe_path.size);
