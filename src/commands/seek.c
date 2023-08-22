@@ -3,7 +3,6 @@
 bool flag_d;
 bool flag_f;
 bool flag_e;
-
 string name;
 
 void find(string path)
@@ -81,6 +80,12 @@ void seek(command c)
     else if (!found_path)
     {
       strcpy(path.str, c.argv[i]);
+      if (path.str[0] == '~')
+      {
+        string tilde = new_string(2);
+        strcpy(tilde.str, "~\0");
+        replace(&path, tilde, homepath);
+      }
       found_path = true;
     }
     else
@@ -88,6 +93,12 @@ void seek(command c)
       // Do error handling
       return;
     }
+  }
+
+  if (flag_d && flag_f)
+  {
+    printf("Invalid flags!\n");
+    return;
   }
 
   if (!found_name)
