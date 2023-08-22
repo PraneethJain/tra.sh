@@ -5,7 +5,6 @@
 #include <dirent.h>
 #include <grp.h>
 #include <limits.h>
-#include <linux/limits.h>
 #include <pwd.h>
 #include <stdbool.h>
 #include <stdio.h>

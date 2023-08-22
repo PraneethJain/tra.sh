@@ -12,9 +12,9 @@ history h;
 void init()
 {
   EXIT = false;
-  homepath = new_string(PATH_MAX);
+  homepath = new_string(MAX_STR_LEN);
   getcwd(homepath.str, homepath.size);
-  lastpath = new_string(PATH_MAX);
+  lastpath = new_string(MAX_STR_LEN);
   tilde = new_string(2);
   strcpy(tilde.str, "~\0");
   delimiters = new_string(128);
@@ -61,6 +61,7 @@ int main()
     string input = new_string(MAX_STR_LEN);
     fgets(input.str, input.size, stdin);
     parse_input(input);
+    free(input.str);
   }
   destroy();
 }

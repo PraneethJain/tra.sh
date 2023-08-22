@@ -2,7 +2,7 @@
 
 void warp(command c)
 {
-  string cwd = new_string(PATH_MAX);
+  string cwd = new_string(MAX_STR_LEN);
 
   if (c.argc == 1)
   {
@@ -31,7 +31,7 @@ void warp(command c)
       if (c.argv[i][0] == '~')
       {
         strcpy(lastpath.str, cwd.str);
-        string abs_path = new_string(PATH_MAX);
+        string abs_path = new_string(MAX_STR_LEN);
         strcpy(abs_path.str, homepath.str);
         strcat(abs_path.str, c.argv[i] + 1);
         if (chdir(abs_path.str) != 0)

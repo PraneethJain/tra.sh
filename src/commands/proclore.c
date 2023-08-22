@@ -14,7 +14,7 @@ void proclore(command c)
     return;
   }
 
-  string process_path = new_string(PATH_MAX);
+  string process_path = new_string(MAX_STR_LEN);
   snprintf(process_path.str, process_path.size, "/proc/%i/stat", pid);
   FILE *process_file = fopen(process_path.str, "r");
   free(process_path.str);
@@ -61,7 +61,7 @@ void proclore(command c)
 
   string exe_proc_path = new_string(32);
   snprintf(exe_proc_path.str, exe_proc_path.size, "/proc/%i/exe", pid);
-  string exe_path = new_string(PATH_MAX);
+  string exe_path = new_string(MAX_STR_LEN);
   if (readlink(exe_proc_path.str, exe_path.str, exe_path.size) == -1)
   {
     // Do error handling

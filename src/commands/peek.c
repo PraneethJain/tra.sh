@@ -54,7 +54,7 @@ string get_datetime(struct stat *info)
 void print_long(char *path, const char *name)
 {
 
-  string cur = new_string(PATH_MAX);
+  string cur = new_string(MAX_STR_LEN);
   strcat(cur.str, path);
   strcat(cur.str, name);
 
@@ -81,7 +81,7 @@ void peek(command c)
   bool flag_a = false;
   bool flag_l = false;
   bool found_path = false;
-  string path = new_string(PATH_MAX);
+  string path = new_string(MAX_STR_LEN);
   for (int i = 1; i < c.argc; ++i)
   {
     if (c.argv[i][0] == '-')

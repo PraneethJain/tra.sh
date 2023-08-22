@@ -26,7 +26,7 @@ void find(string path)
 
     if (entry->d_type == DT_DIR)
     {
-      string next_path = new_string(PATH_MAX);
+      string next_path = new_string(MAX_STR_LEN);
       snprintf(next_path.str, next_path.size, "%s%s", path.str, entry->d_name);
       if ((flag_d || (!flag_d && !flag_f)) && strstr(entry->d_name, name.str) != NULL)
       {
@@ -36,7 +36,7 @@ void find(string path)
     }
     else
     {
-      string next_name = new_string(PATH_MAX);
+      string next_name = new_string(MAX_STR_LEN);
       snprintf(next_name.str, next_name.size, "%s%s", path.str, entry->d_name);
       if ((flag_f || (!flag_d && !flag_f)) && strstr(entry->d_name, name.str) != NULL)
       {
@@ -57,7 +57,7 @@ void seek(command c)
   flag_f = false;
   flag_e = false;
   name = new_string(MAX_STR_LEN);
-  string path = new_string(PATH_MAX);
+  string path = new_string(MAX_STR_LEN);
   bool found_name = false;
   bool found_path = false;
   for (int i = 1; i < c.argc; ++i)

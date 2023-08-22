@@ -6,9 +6,9 @@ string cwd;
 
 void init_prompt()
 {
-  username = new_string(256);
-  hostname = new_string(256);
-  cwd = new_string(PATH_MAX);
+  username = new_string(MAX_STR_LEN);
+  hostname = new_string(MAX_STR_LEN);
+  cwd = new_string(MAX_STR_LEN);
 }
 
 void destroy_prompt()
@@ -32,7 +32,7 @@ void prompt()
     // Do error handling
   }
 
-  // cwd = new_string(PATH_MAX);
+  // cwd = new_string(MAX_STR_LEN);
   if (getcwd(cwd.str, cwd.size) == NULL)
   {
     // Do error handling
