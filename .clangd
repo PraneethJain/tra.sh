@@ -1,3 +1,0 @@
-CompileFlags:
-  Remove: '-ObjC++'
-  Add: '-x C'

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -std=gnu2x
 
 SRCS = src/main.c src/commands/pastevents.c src/commands/peek.c src/commands/proclore.c src/commands/seek.c src/commands/system.c src/commands/warp.c src/utils/base.c src/utils/command.c src/utils/procs.c src/utils/prompt.c 
 OBJS = $(SRCS:.c=.o)
@@ -13,7 +13,7 @@ DBGCFLAGS = -g -O0 -fsanitize=address,undefined -D DEBUG
 RELDIR = release
 RELEXE = $(RELDIR)/$(EXE)
 RELOBJS = $(addprefix $(RELDIR)/, $(OBJS))
-RELCFLAGS = -O3 -D NDEBUG
+RELCFLAGS = -O3
 
 all: prep release
 
