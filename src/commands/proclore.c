@@ -24,56 +24,74 @@ void proclore(command c)
     return;
   }
 
-  string process_file_contents = new_string(MAX_STR_LEN);
-  if (fread(process_file_contents.str, 1, process_file_contents.size, process_file) == 0)
-  {
-    printf("Could not access process details\n");
-    fclose(process_file);
-    return;
-  }
-  fclose(process_file);
-
-  string tok = new_string(MAX_STR_LEN);
-  tok.str = strtok(process_file_contents.str, " ");
-  int i = 2;
   char status = '?';
   pid_t process_gid = 0;
   size_t vmem = 0;
-  while ((tok.str = strtok(NULL, " ")) != NULL)
+  char buf[MAX_STR_LEN];
+  for (int i = 2; i < 24; ++i)
   {
-    switch (i)
-    {
-    case 3:
-      status = tok.str[0];
-      break;
-
-    case 5:
-      process_gid = strtol(tok.str, &temp, 10);
-      break;
-
-    case 23:
-      vmem = strtol(tok.str, &temp, 10);
-      break;
-    }
-    ++i;
+    if (i == 3)
+      fscanf(process_file, "%c", &status);
+    else if (i == 5)
+      fscanf(process_file, "%i", &process_gid);
+    else if (i == 23)
+      fscanf(process_file, "%zu", &vmem);
+    else
+      fscanf(process_file, "%s", buf);
   }
-  free(process_file_contents.str);
+
+  // string process_file_contents = new_string(MAX_STR_LEN);
+  // if (fread(process_file_contents.str, 1, process_file_contents.size, process_file) == 0)
+  // {
+  //   printf("Could not access process details\n");
+  //   fclose(process_file);
+  //   return;
+  // }
+  // fclose(process_file);
+
+  // char *tok;
+  // tok = strtok(process_file_contents.str, " ");
+  // int i = 2;
+  // char status = '?';
+  // pid_t process_gid = 0;
+  // size_t vmem = 0;
+  // while ((tok = strtok(NULL, " ")) != NULL)
+  // {
+  //   switch (i)
+  //   {
+  //   case 3:
+  //     status = tok[0];
+  //     break;
+  //
+  //   case 5:
+  //     process_gid = strtol(tok, &temp, 10);
+  //     break;
+  //
+  //   case 23:
+  //     vmem = strtol(tok, &temp, 10);
+  //     break;
+  //   }
+  //   ++i;
+  // }
+  // free(process_file_contents.str);
 
   string exe_proc_path = new_string(32);
   snprintf(exe_proc_path.str, exe_proc_path.size, "/proc/%i/exe", pid);
   string exe_path = new_string(MAX_STR_LEN);
-  if (readlink(exe_proc_path.str, exe_path.str, exe_path.size) == -1)
+  int res = readlink(exe_proc_path.str, exe_path.str, exe_path.size);
+  free(exe_proc_path.str);
+  if (res == -1)
   {
     // Do error handling
   }
-  free(exe_proc_path.str);
+  else
+  {
+    exe_path.str[res] = '\0';
+  }
 
   if (strstr(exe_path.str, homepath.str) == exe_path.str) // If cwd starts with homepath
-  {
-    string tilde = new_string(2);
-    tilde.str = "~\0";
     replace(&exe_path, homepath, tilde);
-  }
+
   pid_t term_gid = getpgrp();
   printf("pid: %i\n", pid);
   printf("Process Status: %c%c\n", status, term_gid == process_gid ? '+' : ' ');

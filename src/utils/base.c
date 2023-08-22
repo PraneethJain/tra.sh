@@ -22,8 +22,8 @@ void replace(string *s, string a, string b)
   strncpy(temp.str, s->str, idx);
   strcat(temp.str, b.str);
   strcat(temp.str, s->str + idx + strlen(a.str));
-
-  s->str = temp.str;
+  strcpy(s->str, temp.str);
+  free(temp.str);
 }
 
 char **to_cstring_array(string *s, size_t len)
