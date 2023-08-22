@@ -40,6 +40,7 @@ void destroy()
   free(homepath.str);
   free(lastpath.str);
   free(tilde.str);
+  free(delimiters.str);
   free_process_list(p);
 
   destroy_prompt();
