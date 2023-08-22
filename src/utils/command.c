@@ -19,7 +19,6 @@ void parse_input(string input)
   c.size = 0;
 
   size_t input_length = strlen(input.str);
-  size_t cur_ptr = 0;
   size_t cur_command_len;
   for (size_t cur_ptr = 0; cur_ptr < input_length; cur_ptr += cur_command_len + 1)
   {
@@ -36,7 +35,7 @@ void parse_input(string input)
     }
   }
 
-  for (int i = 0; i < c.size; ++i)
+  for (size_t i = 0; i < c.size; ++i)
     exec_command(c.arr[i]);
 
   // printf("%zu Commands\n\n", c.size);

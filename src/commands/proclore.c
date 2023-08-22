@@ -35,9 +35,9 @@ void proclore(command c)
   string tok = new_string(MAX_STR_LEN);
   tok.str = strtok(process_file_contents.str, " ");
   int i = 2;
-  char status;
-  pid_t process_gid;
-  size_t vmem;
+  char status = '?';
+  pid_t process_gid = 0;
+  size_t vmem = 0;
   while ((tok.str = strtok(NULL, " ")) != NULL)
   {
     switch (i)

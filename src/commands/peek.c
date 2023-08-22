@@ -87,7 +87,7 @@ void peek(command c)
     if (c.argv[i][0] == '-')
     {
       size_t len = strlen(c.argv[i]);
-      for (int j = 1; j < len; ++j)
+      for (size_t j = 1; j < len; ++j)
       {
         flag_l |= c.argv[i][j] == 'l';
         flag_a |= c.argv[i][j] == 'a';

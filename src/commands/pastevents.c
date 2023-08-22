@@ -49,7 +49,7 @@ void pastevents(command c)
     }
 
     commands replacement = h.arr[idx];
-    for (int i = 0; i < replacement.size; ++i)
+    for (size_t i = 0; i < replacement.size; ++i)
     {
       exec_command(replacement.arr[i]);
     }
@@ -66,7 +66,7 @@ void shift_one(commands *cs, int start_idx)
 void insert(commands *cs, int h_idx, int cs_idx)
 {
   cs->arr[cs_idx] = h.arr[h_idx].arr[0];
-  for (int i = 1; i < h.arr[h_idx].size; ++i)
+  for (size_t i = 1; i < h.arr[h_idx].size; ++i)
   {
     shift_one(cs, cs_idx + i);
     cs->arr[cs_idx + i] = h.arr[h_idx].arr[i];
@@ -78,7 +78,7 @@ void add_event(commands cs)
   if (cs.size == 0)
     return;
 
-  for (int i = 0; i < cs.size; ++i)
+  for (size_t i = 0; i < cs.size; ++i)
   {
     command c = cs.arr[i];
     if (strcmp(c.argv[0], "pastevents") == 0)

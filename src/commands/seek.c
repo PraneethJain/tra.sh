@@ -65,7 +65,7 @@ void seek(command c)
     if (c.argv[i][0] == '-')
     {
       size_t len = strlen(c.argv[i]);
-      for (int j = 1; j < len; ++j)
+      for (size_t j = 1; j < len; ++j)
       {
         flag_d |= c.argv[i][j] == 'd';
         flag_f |= c.argv[i][j] == 'f';

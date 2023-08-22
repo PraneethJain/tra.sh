@@ -29,7 +29,7 @@ void replace(string *s, string a, string b)
 char **to_cstring_array(string *s, size_t len)
 {
   char **res = (char **)malloc(sizeof(char *) * (len + 1));
-  for (int i = 0; i < len; ++i)
+  for (size_t i = 0; i < len; ++i)
     res[i] = s[i].str;
   res[len] = NULL;
   return res;
@@ -44,7 +44,7 @@ void print_command(command *c)
 
 void print_commands(commands *cs)
 {
-  for (int i = 0; i < cs->size; ++i)
+  for (size_t i = 0; i < cs->size; ++i)
     print_command(&cs->arr[i]);
   printf("\n");
 }
@@ -66,7 +66,7 @@ bool commands_equal(commands *cs1, commands *cs2)
   if (cs1->size != cs2->size)
     return false;
 
-  for (int i = 0; i < cs1->size; ++i)
+  for (size_t i = 0; i < cs1->size; ++i)
     if (!command_equal(&cs1->arr[i], &cs2->arr[i]))
       return false;
 
