@@ -1,3 +1,6 @@
 *.out
 *.o
 .trash_history
+trash
+release
+debug
