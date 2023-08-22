@@ -53,7 +53,6 @@ void remove_processes(process_list p)
 
     cur = next;
   }
-  printf("\n");
 }
 
 void free_process_list(process_list p)
