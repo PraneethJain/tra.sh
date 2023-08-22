@@ -36,6 +36,9 @@ void find(string path)
     if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
       continue;
 
+    if (entry->d_name[0] == '.') // Doubt document q124
+      continue;
+
     if (entry->d_type == DT_DIR)
     {
       string next_path = new_string(MAX_STR_LEN);
