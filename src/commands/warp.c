@@ -37,8 +37,10 @@ void warp(command c)
         if (chdir(abs_path.str) != 0)
         {
           printf("Cannot warp to %s\n", c.argv[i]);
+          free(abs_path.str);
           break;
         }
+        free(abs_path.str);
       }
       else if (strcmp(c.argv[i], "-") == 0)
       {
@@ -70,4 +72,5 @@ void warp(command c)
       printf("%s\n", cwd.str);
     }
   }
+  free(cwd.str);
 }
