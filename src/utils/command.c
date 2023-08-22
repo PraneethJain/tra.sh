@@ -56,7 +56,11 @@ void parse_input(string input)
 
 void exec_command(command c)
 {
-  if (strcmp(c.argv[0], "warp") == 0)
+  if (strcmp(c.argv[0], "exit") == 0)
+  {
+    EXIT = true;
+  }
+  else if (strcmp(c.argv[0], "warp") == 0)
   {
     warp(c);
   }

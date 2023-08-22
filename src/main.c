@@ -1,5 +1,6 @@
 #include "headers.h"
 
+bool EXIT;
 string homepath;
 string lastpath;
 process_list p;
@@ -8,7 +9,7 @@ history h;
 
 int main()
 {
-
+  EXIT = false;
   homepath = new_string(PATH_MAX);
   getcwd(homepath.str, homepath.size);
   lastpath = new_string(PATH_MAX);
@@ -25,8 +26,16 @@ int main()
     fclose(history_file);
   }
 
-  while (1)
+  // To do (till Part A):
+  // time taken in prompt
+  // peek block size
+  // seek
+
+  while (!EXIT)
   {
+#ifdef DEBUG
+    printf("IN DEBUG MODE\n");
+#endif
     remove_processes(p);
     prompt();
     string input = new_string(MAX_STR_LEN);

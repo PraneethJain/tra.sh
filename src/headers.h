@@ -29,6 +29,7 @@
 #include "inc/system.h"
 #include "inc/warp.h"
 
+extern bool EXIT;
 extern string homepath;
 extern string lastpath;
 extern process_list p;
