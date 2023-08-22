@@ -1,5 +1,32 @@
 #include "../headers.h"
 
+size_t get_block_size_and_max_filesize(struct dirent **entries, int n, string *path, bool flag_a, size_t *filesize)
+{
+  size_t res = 0;
+  for (int i = 0; i < n; ++i)
+  {
+    if (path->str[strlen(path->str) - 1] != '/')
+      strcat(path->str, "/");
+
+    if (!flag_a && entries[i]->d_name[0] == '.')
+      continue;
+
+    string cur = new_string(MAX_STR_LEN);
+    strcat(cur.str, path->str);
+    strcat(cur.str, entries[i]->d_name);
+
+    struct stat info;
+    lstat(cur.str, &info);
+
+    res += info.st_blocks;
+
+    if (*filesize < (size_t)info.st_size)
+      *filesize = info.st_size;
+  }
+
+  return res; // ls -l uses 1024 block size on my system, but this result assumes 512 block size according to q117
+}
+
 string get_perms(struct stat *info)
 {
   string perms = new_string(MAX_STR_LEN);
@@ -51,7 +78,7 @@ string get_datetime(struct stat *info)
   return datetime;
 }
 
-void print_long(char *path, const char *name)
+void print_long(char *path, const char *name, int size_width)
 {
 
   string cur = new_string(MAX_STR_LEN);
@@ -67,7 +94,7 @@ void print_long(char *path, const char *name)
   printf(" %4li ", info.st_nlink);
   printf("%8s ", getpwuid(info.st_uid)->pw_name);
   printf("%8s ", getgrgid(info.st_gid)->gr_name);
-  printf("%12li ", info.st_size); // Enough space for a terabyte
+  printf("%*li ", size_width, info.st_size);
   printf("%s ", datetime.str);
   if (S_ISDIR(info.st_mode))
     printf(C_BLUE "%s" C_RESET, name);
@@ -112,8 +139,6 @@ void peek(command c)
     }
   }
 
-  // printf("flag l is %i\n", flag_l);
-  // printf("flag a is %i\n", flag_a);
   if (!found_path)
   {
     strcpy(path.str, ".");
@@ -130,17 +155,21 @@ void peek(command c)
   }
   else
   {
+    int size_width = 0;
+    if (flag_l)
+    {
+      size_t filesize = 0;
+      size_t block_size = get_block_size_and_max_filesize(entries, n, &path, flag_a, &filesize);
+      printf("total %zu\n", block_size);
+      size_width = num_digits(filesize);
+    }
     for (int i = 0; i < n; ++i)
     {
-      if (path.str[strlen(path.str) - 1] != '/')
-      {
-        strcat(path.str, "/");
-      }
-
       if (!flag_a && entries[i]->d_name[0] == '.')
         continue;
+
       if (flag_l)
-        print_long(path.str, entries[i]->d_name);
+        print_long(path.str, entries[i]->d_name, size_width);
       else
         printf("%s\n", entries[i]->d_name);
 

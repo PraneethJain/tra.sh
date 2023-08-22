@@ -37,7 +37,7 @@ bool commands_equal(commands *cs1, commands *cs2);
 
 int max(int x, int y);
 int min(int x, int y);
-
+int num_digits(int x);
 bool is_numeric(char *s);
 
 #endif

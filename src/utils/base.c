@@ -83,6 +83,19 @@ int min(int x, int y)
   return x < y ? x : y;
 }
 
+int num_digits(int x)
+{
+  int res = 0;
+
+  do
+  {
+    x /= 10;
+    ++res;
+  } while (x);
+
+  return res;
+}
+
 bool is_numeric(char *s)
 {
   for (int i = 0; s[i] != '\0'; ++i)
