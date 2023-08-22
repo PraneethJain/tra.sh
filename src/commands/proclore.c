@@ -49,9 +49,8 @@ void proclore(command c)
   if (strstr(exe_path.str, homepath.str) == exe_path.str) // If cwd starts with homepath
     replace(&exe_path, homepath, tilde);
 
-  pid_t term_gid = getpgrp();
   printf("pid: %i\n", pid);
-  printf("Process Status: %c%c\n", status, term_gid == process_gid ? '+' : ' ');
+  printf("Process Status: %c%c\n", status, pid == getpid() ? '+' : ' ');
   printf("Process Group: %i\n", process_gid);
   printf("Virtual Memory: %zu\n", vmem);
   printf("Executable Path: %s\n", exe_path.str);
