@@ -34,7 +34,6 @@ extern string lastpath;
 extern string tilde;
 extern string delimiters;
 extern process_list p;
-extern const char *history_path;
 extern history h;
 
 #endif

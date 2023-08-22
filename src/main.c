@@ -6,7 +6,6 @@ string lastpath;
 string tilde;
 string delimiters;
 process_list p;
-const char *history_path = ".trash_history";
 history h;
 
 void init()
@@ -21,17 +20,7 @@ void init()
   strcpy(delimiters.str, " \t\n\v\f\r");
   p = init_process_list();
 
-  FILE *history_file = fopen(history_path, "rb");
-  if (history_file == NULL)
-  {
-    h.cur_size = 0;
-  }
-  else
-  {
-    fread(&h, sizeof(history), 1, history_file);
-    fclose(history_file);
-  }
-
+  init_history();
   init_prompt();
 }
 
@@ -44,6 +33,7 @@ void destroy()
   free_process_list(p);
 
   destroy_prompt();
+  destroy_history();
 }
 
 int main()

@@ -1,8 +1,28 @@
 #include "../headers.h"
 
+string history_path;
+
+void init_history()
+{
+  history_path = new_string(MAX_STR_LEN);
+  strcpy(history_path.str, homepath.str);
+
+  strcat(history_path.str, "/.trash_history");
+  FILE *history_file = fopen(history_path.str, "rb");
+  if (history_file == NULL)
+  {
+    h.cur_size = 0;
+  }
+  else
+  {
+    fread(&h, sizeof(history), 1, history_file);
+    fclose(history_file);
+  }
+}
+
 void write_history()
 {
-  FILE *history_file = fopen(history_path, "wb");
+  FILE *history_file = fopen(history_path.str, "wb");
   if (history_file == NULL)
   {
     // Do error handling
@@ -110,4 +130,10 @@ void add_event(commands cs)
   h.cur_size = min(h.cur_size + 1, HISTORY_SIZE);
   h.arr[0] = cs;
   write_history();
+}
+
+void destroy_history()
+{
+  write_history();
+  free(history_path.str);
 }

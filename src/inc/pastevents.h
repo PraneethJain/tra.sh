@@ -10,7 +10,9 @@ typedef struct history
   size_t cur_size;
 } history;
 
+void init_history();
 void pastevents(command c);
 void add_event(commands cs);
+void destroy_history();
 
 #endif
