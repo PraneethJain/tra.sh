@@ -2,9 +2,11 @@
 
 string history_path;
 
-void init_history()
+int init_history()
 {
   history_path = new_string(MAX_STR_LEN);
+  if (!history_path.allocated)
+    return FAILURE;
   strcpy(history_path.str, homepath.str);
 
   strcat(history_path.str, "/.trash_history");
@@ -18,6 +20,9 @@ void init_history()
     fread(&h, sizeof(history), 1, history_file);
     fclose(history_file);
   }
+  DEBUG_PRINT("Initialized History\n");
+
+  return SUCCESS;
 }
 
 void write_history()
@@ -136,4 +141,5 @@ void destroy_history()
 {
   write_history();
   free(history_path.str);
+  DEBUG_PRINT("History Written\n");
 }

@@ -3,6 +3,11 @@
 process_list init_process_list()
 {
   process_list p = (process_list)malloc(sizeof(process_list_st));
+  if (p == NULL)
+  {
+    DEBUG_PRINT("Bad malloc\n");
+    ERROR_PRINT("Ran out of memory!");
+  }
   // Dummy node
   p->pid = -1;
   p->next = NULL;
@@ -13,6 +18,11 @@ process_list init_process_list()
 void insert_process(process_list p, command c, pid_t pid)
 {
   process_list new = (process_list)malloc(sizeof(process_list_st));
+  if (new == NULL)
+  {
+    DEBUG_PRINT("Bad malloc\n");
+    ERROR_PRINT("Ran out of memory!");
+  }
   new->c = c;
   new->pid = pid;
   new->next = p->next;

@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <dirent.h>
+#include <errno.h>
 #include <grp.h>
 #include <limits.h>
 #include <math.h>

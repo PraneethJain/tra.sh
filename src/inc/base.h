@@ -7,6 +7,9 @@
 #define MAX_ARGS 16
 #define MAX_STR_LEN 1024
 
+#define SUCCESS 0
+#define FAILURE 1
+
 typedef struct string
 {
   char *str;

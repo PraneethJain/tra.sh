@@ -4,11 +4,19 @@ string username;
 string hostname;
 string cwd;
 
-void init_prompt()
+int init_prompt()
 {
   username = new_string(MAX_STR_LEN);
+  if (!username.allocated)
+    return FAILURE;
   hostname = new_string(MAX_STR_LEN);
+  if (!hostname.allocated)
+    return FAILURE;
   cwd = new_string(MAX_STR_LEN);
+  if (!cwd.allocated)
+    return FAILURE;
+
+  return SUCCESS;
 }
 
 void destroy_prompt()
