@@ -1,6 +1,6 @@
 #include "../headers.h"
 
-void system_command(command c)
+int system_command(command c)
 {
   pid_t pid = fork();
   if (pid == 0)
@@ -12,7 +12,9 @@ void system_command(command c)
 
     if (execvp(c.argv[0], argv) == -1)
     {
-      printf("Error\n");
+      DEBUG_PRINT("execvp failed with errno %i (%s)\n", errno, strerror(errno));
+      ERROR_PRINT("Couldn't execute %s\n", c.argv[0]);
+      exit(1);
     }
   }
   else
@@ -20,7 +22,8 @@ void system_command(command c)
     if (c.is_background)
     {
       printf("%i\n", pid);
-      insert_process(p, c, pid);
+      if (insert_process(p, c, pid) == FAILURE)
+        return FAILURE;
     }
     else
     {
@@ -28,4 +31,6 @@ void system_command(command c)
       waitpid(pid, &status, 0);
     }
   }
+
+  return SUCCESS;
 }

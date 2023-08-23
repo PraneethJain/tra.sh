@@ -26,24 +26,27 @@ void destroy_prompt()
   free(cwd.str);
 }
 
-void prompt()
+int prompt()
 {
-  // username = new_string(256);
   if (getlogin_r(username.str, username.size) != 0)
   {
-    // Do error handling
+    DEBUG_PRINT("getlogin_r failed with errno %i (%s)", errno, strerror(errno));
+    ERROR_PRINT("Could not get username\n");
+    return FAILURE;
   }
 
-  // hostname = new_string(256);
   if (gethostname(hostname.str, hostname.size) != 0)
   {
-    // Do error handling
+    DEBUG_PRINT("gethostname failed with errno %i (%s)", errno, strerror(errno));
+    ERROR_PRINT("Could not get hostname\n");
+    return FAILURE;
   }
 
-  // cwd = new_string(MAX_STR_LEN);
   if (getcwd(cwd.str, cwd.size) == NULL)
   {
-    // Do error handling
+    DEBUG_PRINT("getcwd failed with errno %i (%s)", errno, strerror(errno));
+    ERROR_PRINT("Could not get current directory\n");
+    return FAILURE;
   }
 
   if (strstr(cwd.str, homepath.str) == cwd.str) // If cwd starts with homepath
@@ -60,4 +63,6 @@ void prompt()
     printf("<" C_GREEN "%s" C_RESET "@" C_BLUE "%s" C_RESET ":" C_YELLOW "%s" C_RESET "> ", username.str, hostname.str,
            cwd.str);
   }
+
+  return SUCCESS;
 }

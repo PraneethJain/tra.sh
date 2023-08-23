@@ -2,6 +2,6 @@
 #define __WARP_H
 
 #include "base.h"
-void warp(command input);
+int warp(command input);
 
 #endif

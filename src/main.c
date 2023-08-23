@@ -67,7 +67,8 @@ void destroy()
 
 int main()
 {
-  init();
+  if (init() == FAILURE)
+    return FAILURE;
   while (!EXIT)
   {
     remove_processes(p);
@@ -78,4 +79,6 @@ int main()
     free(input.str);
   }
   destroy();
+
+  return SUCCESS;
 }

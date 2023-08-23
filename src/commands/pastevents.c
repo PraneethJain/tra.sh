@@ -25,19 +25,23 @@ int init_history()
   return SUCCESS;
 }
 
-void write_history()
+int write_history()
 {
+  DEBUG_PRINT("Attempting to write history at %s\n", history_path.str);
   FILE *history_file = fopen(history_path.str, "wb");
   if (history_file == NULL)
   {
-    // Do error handling
-    return;
+    DEBUG_PRINT("fopen failed with errno %i (%s)\n", errno, strerror(errno));
+    ERROR_PRINT("Failed to write history");
+    return FAILURE;
   }
   fwrite(&h, sizeof(history), 1, history_file);
   fclose(history_file);
+
+  return SUCCESS;
 }
 
-void pastevents(command c)
+int pastevents(command c)
 {
   if (c.argc == 1)
   {
@@ -50,8 +54,11 @@ void pastevents(command c)
   {
     if (strcmp(c.argv[1], "purge") != 0)
     {
-      // Do error handling
-      return;
+      if (strcmp(c.argv[1], "execute") == 0)
+        ERROR_PRINT("Missing index for pastevents execute\n");
+      else
+        ERROR_PRINT("Invalid subcommand for pastevents: %s\n", c.argv[1]);
+      return FAILURE;
     }
 
     h.cur_size = 0;
@@ -61,16 +68,16 @@ void pastevents(command c)
   {
     if (!is_numeric(c.argv[2]))
     {
-      // Do error handling
-      return;
+      ERROR_PRINT("Index must be an integer for pastevents execute, found %s\n", c.argv[2]);
+      return FAILURE;
     }
 
     char *temp;
     int idx = strtoll(c.argv[2], &temp, 10) - 1;
-    if (idx < 0 || idx > 14)
+    if (idx < 0 || idx > (int)h.cur_size)
     {
-      // Do error handling
-      return;
+      ERROR_PRINT("Index %i out of bounds for pastevents execute\n", idx);
+      return FAILURE;
     }
 
     commands replacement = h.arr[idx];
@@ -79,6 +86,8 @@ void pastevents(command c)
       exec_command(replacement.arr[i]);
     }
   }
+
+  return SUCCESS;
 }
 
 void shift_one(commands *cs, int start_idx)
@@ -98,10 +107,12 @@ void insert(commands *cs, int h_idx, int cs_idx)
   }
 }
 
-void add_event(commands cs)
+int add_event(commands cs)
 {
   if (cs.size == 0)
-    return;
+    return SUCCESS;
+
+  bool to_add = true;
 
   for (size_t i = 0; i < cs.size; ++i)
   {
@@ -118,28 +129,37 @@ void add_event(commands cs)
           i += h.arr[idx].size - 1;
           continue;
         }
+        else
+        {
+          to_add = false;
+        }
       }
       else
       {
-        // Dont add to pastevents
-        return;
+        return SUCCESS;
       }
     }
   }
 
+  if (!to_add)
+    return SUCCESS;
+
   if (h.cur_size > 0 && commands_equal(&cs, &h.arr[0]))
-    return;
+    return SUCCESS;
 
   for (int i = min((int)h.cur_size - 1, HISTORY_SIZE - 2); i >= 0; --i)
     h.arr[i + 1] = h.arr[i];
   h.cur_size = min(h.cur_size + 1, HISTORY_SIZE);
   h.arr[0] = cs;
-  write_history();
+
+  int status = write_history();
+  return status;
 }
 
-void destroy_history()
+int destroy_history()
 {
-  write_history();
+  int status = write_history();
   free(history_path.str);
-  DEBUG_PRINT("History Written\n");
+
+  return status;
 }

@@ -11,8 +11,8 @@ typedef struct history
 } history;
 
 int init_history();
-void pastevents(command c);
-void add_event(commands cs);
-void destroy_history();
+int pastevents(command c);
+int add_event(commands cs);
+int destroy_history();
 
 #endif

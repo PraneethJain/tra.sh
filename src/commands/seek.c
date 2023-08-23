@@ -26,7 +26,7 @@ void find(string path)
   DIR *dir = opendir(path.str);
   if (dir == NULL)
   {
-    // Do error handling
+    ERROR_PRINT("No directory %s while seeking\n", path.str);
     return;
   }
 
@@ -70,11 +70,11 @@ void find(string path)
 
   if (closedir(dir))
   {
-    // Do error handling
+    ERROR_PRINT("Couldn't close %s while seeking\n", path.str);
   }
 }
 
-void seek(command c)
+int seek(command c)
 {
   flag_d = false;
   flag_f = false;
@@ -112,21 +112,35 @@ void seek(command c)
     }
     else
     {
-      // Do error handling
-      return;
+      ERROR_PRINT("Invalid arguments for seek\n");
+      free(path.str);
+      free(last_found_path.str);
+      free(name.str);
+      return FAILURE;
     }
   }
 
   if (flag_d && flag_f)
   {
-    printf("Invalid flags!\n");
-    return;
+    ERROR_PRINT("Invalid flags!\n");
+    free(path.str);
+    free(last_found_path.str);
+    free(name.str);
+    return FAILURE;
   }
 
   if (!found_name)
   {
-    // Do error handling
-    return;
+    ERROR_PRINT("No file/directory to search for in seek\n");
+    free(path.str);
+    free(last_found_path.str);
+    free(name.str);
+    return FAILURE;
+  }
+
+  if (!found_path)
+  {
+    strcpy(path.str, ".");
   }
 
   path_length = strlen(path.str);
@@ -139,7 +153,11 @@ void seek(command c)
     {
       if (chdir(last_found_path.str) != 0)
       {
-        printf("Missing permissions for task!\n");
+        ERROR_PRINT("Missing permissions for -e in seek\n");
+        free(path.str);
+        free(last_found_path.str);
+        free(name.str);
+        return FAILURE;
       }
     }
     else if (status == found_file)
@@ -147,12 +165,23 @@ void seek(command c)
       FILE *f = fopen(last_found_path.str, "r");
       if (f == NULL)
       {
-        printf("Missing permissions for task!\n");
+        ERROR_PRINT("Missing permissions for -e in seek\n");
+        free(path.str);
+        free(last_found_path.str);
+        free(name.str);
+        return FAILURE;
       }
-      char c = 0;
-      while ((c = fgetc(f)) != EOF)
-        printf("%c", c);
+      else
+      {
+        char c = 0;
+        while ((c = fgetc(f)) != EOF)
+          printf("%c", c);
+      }
     }
   }
+  free(path.str);
+  free(last_found_path.str);
   free(name.str);
+
+  return SUCCESS;
 }

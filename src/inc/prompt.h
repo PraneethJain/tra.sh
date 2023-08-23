@@ -3,7 +3,7 @@
 
 #include "base.h"
 int init_prompt();
-void prompt();
+int prompt();
 void destroy_prompt();
 
 #endif

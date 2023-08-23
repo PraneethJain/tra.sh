@@ -62,34 +62,38 @@ void parse_input(string input)
   add_event(c);
 }
 
-void exec_command(command c)
+int exec_command(command c)
 {
+  int status;
   if (strcmp(c.argv[0], "exit") == 0)
   {
     EXIT = true;
+    status = SUCCESS;
   }
   else if (strcmp(c.argv[0], "warp") == 0)
   {
-    warp(c);
+    status = warp(c);
   }
   else if (strcmp(c.argv[0], "peek") == 0)
   {
-    peek(c);
+    status = peek(c);
   }
   else if (strcmp(c.argv[0], "proclore") == 0)
   {
-    proclore(c);
+    status = proclore(c);
   }
   else if (strcmp(c.argv[0], "pastevents") == 0)
   {
-    pastevents(c);
+    status = pastevents(c);
   }
   else if (strcmp(c.argv[0], "seek") == 0)
   {
-    seek(c);
+    status = seek(c);
   }
   else
   {
-    system_command(c);
+    status = system_command(c);
   }
+
+  return status;
 }

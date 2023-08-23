@@ -2,6 +2,6 @@
 #define __PROCLORE_H
 
 #include "base.h"
-void proclore(command c);
+int proclore(command c);
 
 #endif

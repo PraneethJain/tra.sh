@@ -2,6 +2,6 @@
 #define __PEEK_H
 
 #include "base.h"
-void peek(command c);
+int peek(command c);
 
 #endif

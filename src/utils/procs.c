@@ -5,7 +5,7 @@ process_list init_process_list()
   process_list p = (process_list)malloc(sizeof(process_list_st));
   if (p == NULL)
   {
-    DEBUG_PRINT("Bad malloc\n");
+    DEBUG_PRINT("malloc failed with errno %i (%s)\n", errno, strerror(errno));
     ERROR_PRINT("Ran out of memory!");
   }
   // Dummy node
@@ -15,21 +15,24 @@ process_list init_process_list()
   return p;
 }
 
-void insert_process(process_list p, command c, pid_t pid)
+int insert_process(process_list p, command c, pid_t pid)
 {
   process_list new = (process_list)malloc(sizeof(process_list_st));
   if (new == NULL)
   {
-    DEBUG_PRINT("Bad malloc\n");
+    DEBUG_PRINT("malloc failed with errno %i (%s)\n", errno, strerror(errno));
     ERROR_PRINT("Ran out of memory!");
+    return FAILURE;
   }
   new->c = c;
   new->pid = pid;
   new->next = p->next;
   p->next = new;
+
+  return SUCCESS;
 }
 
-void remove_process(process_list p, pid_t pid)
+int remove_process(process_list p, pid_t pid)
 {
   process_list cur = p->next;
   process_list prev = p;
@@ -42,19 +45,24 @@ void remove_process(process_list p, pid_t pid)
       printf("%s exited normally (%i)\n", cur->c.argv[0], cur->pid);
       free(cur);
       prev->next = next;
-      return;
+      return SUCCESS;
     }
     prev = prev->next;
     cur = next;
   }
+
+  return FAILURE;
 }
 
-void remove_processes(process_list p)
+int remove_processes(process_list p)
 {
   pid_t to_kill;
   int status;
   while ((to_kill = waitpid(-1, &status, WNOHANG)) > 0)
-    remove_process(p, to_kill);
+    if (remove_process(p, to_kill) == FAILURE)
+      return FAILURE;
+
+  return SUCCESS;
 }
 
 void free_process_list(process_list p)

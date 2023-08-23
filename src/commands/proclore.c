@@ -1,17 +1,24 @@
 #include "../headers.h"
 
-void proclore(command c)
+int proclore(command c)
 {
   pid_t pid;
   char *temp;
   if (c.argc == 1)
     pid = getpid();
   else if (c.argc == 2)
+  {
+    if (!is_numeric(c.argv[1]))
+    {
+      ERROR_PRINT("Invalid pid %s for proclore\n", c.argv[1]);
+      return FAILURE;
+    }
     pid = strtol(c.argv[1], &temp, 10);
+  }
   else
   {
-    // Do error handling
-    return;
+    ERROR_PRINT("Proclore takes at most 1 argument\n");
+    return FAILURE;
   }
 
   string process_path = new_string(MAX_STR_LEN);
@@ -20,8 +27,8 @@ void proclore(command c)
   free(process_path.str);
   if (process_file == NULL)
   {
-    printf("No such process\n");
-    return;
+    ERROR_PRINT("No process with pid %i\n", pid);
+    return FAILURE;
   }
 
   char status = '?';
@@ -39,7 +46,7 @@ void proclore(command c)
   free(exe_proc_path.str);
   if (res == -1)
   {
-    // Do error handling
+    DEBUG_PRINT("Couldn't read exe path\n");
   }
   else
   {
@@ -55,4 +62,6 @@ void proclore(command c)
   printf("Virtual Memory: %zu\n", vmem);
   printf("Executable Path: %s\n", exe_path.str);
   free(exe_path.str);
+
+  return SUCCESS;
 }

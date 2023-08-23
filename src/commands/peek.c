@@ -1,8 +1,8 @@
 #include "../headers.h"
 
-size_t get_block_size_and_max_filesize(struct dirent **entries, int n, string *path, bool flag_a, size_t *filesize)
+int get_block_size_and_max_filesize(struct dirent **entries, int n, string *path, bool flag_a, size_t *filesize)
 {
-  size_t res = 0;
+  int res = 0;
   for (int i = 0; i < n; ++i)
   {
     if (path->str[strlen(path->str) - 1] != '/')
@@ -12,11 +12,21 @@ size_t get_block_size_and_max_filesize(struct dirent **entries, int n, string *p
       continue;
 
     string cur = new_string(MAX_STR_LEN);
+    if (!cur.allocated)
+      return FAILURE;
     strcat(cur.str, path->str);
     strcat(cur.str, entries[i]->d_name);
 
     struct stat info;
-    lstat(cur.str, &info);
+    int status = lstat(cur.str, &info);
+
+    if (status == -1)
+    {
+      DEBUG_PRINT("lstat failed with errno %i (%s)\n", errno, strerror(errno));
+      ERROR_PRINT("Couldn't peek into %s\n", cur.str);
+      free(cur.str);
+      return FAILURE;
+    }
     free(cur.str);
 
     res += info.st_blocks;
@@ -31,6 +41,8 @@ size_t get_block_size_and_max_filesize(struct dirent **entries, int n, string *p
 string get_perms(struct stat *info)
 {
   string perms = new_string(MAX_STR_LEN);
+  if (!perms.allocated)
+    return perms;
   // First character in permissions:
   // -    Regular file
   // b    Block special file
@@ -73,24 +85,38 @@ string get_datetime(struct stat *info)
 {
   // When last modification is more than 6 months ago, year is shown instead of time
   string datetime = new_string(128);
+  if (!datetime.allocated)
+    return datetime;
   strftime(datetime.str, datetime.size, time(0) - info->st_mtime < 15768000 ? "%h %d %H:%M" : "%h %d %Y ",
            localtime(&info->st_mtime));
 
   return datetime;
 }
 
-void print_long(char *path, const char *name, int size_width)
+int print_long(char *path, const char *name, int size_width)
 {
 
   string cur = new_string(MAX_STR_LEN);
+  if (!cur.allocated)
+    return FAILURE;
   strcat(cur.str, path);
   strcat(cur.str, name);
 
   struct stat info;
-  lstat(cur.str, &info);
+  if (lstat(cur.str, &info) == -1)
+  {
+    DEBUG_PRINT("lstat failed with errno %i (%s)\n", errno, strerror(errno));
+    ERROR_PRINT("Couldn't peek into %s\n", cur.str);
+    free(cur.str);
+    return FAILURE;
+  }
 
   string perms = get_perms(&info);
+  if (!perms.allocated)
+    return FAILURE;
   string datetime = get_datetime(&info);
+  if (!datetime.allocated)
+    return FAILURE;
   printf("%s ", perms.str);
   printf(" %4li ", info.st_nlink);
   printf("%8s ", getpwuid(info.st_uid)->pw_name);
@@ -108,14 +134,19 @@ void print_long(char *path, const char *name, int size_width)
   free(cur.str);
   free(perms.str);
   free(datetime.str);
+
+  return SUCCESS;
 }
 
-void peek(command c)
+int peek(command c)
 {
   bool flag_a = false;
   bool flag_l = false;
   bool found_path = false;
   string path = new_string(MAX_STR_LEN);
+  if (!path.allocated)
+    return FAILURE;
+
   for (int i = 1; i < c.argc; ++i)
   {
     if (c.argv[i][0] == '-')
@@ -129,9 +160,9 @@ void peek(command c)
     }
     else if (found_path)
     {
-      // Do error handling
-      printf("Multiple paths found: %s and %s\n", path.str, c.argv[i]);
-      return;
+      ERROR_PRINT("Multiple paths found for peek: %s and %s\n", path.str, c.argv[i]);
+      free(path.str);
+      return FAILURE;
     }
     else
     {
@@ -149,35 +180,43 @@ void peek(command c)
     replace(&path, tilde, homepath);
 
   struct dirent **entries;
+  DEBUG_PRINT("Attempting to scandir %s\n", path.str);
   int n = scandir(path.str, &entries, 0, alphasort);
   if (n < 0)
   {
-    // Do error handling
+    ERROR_PRINT("Failed to read %s\n", path.str);
+    free(path.str);
+    return FAILURE;
   }
-  else
+  int size_width = 0;
+  if (flag_l)
   {
-    int size_width = 0;
+    size_t filesize = 0;
+    size_t block_size = get_block_size_and_max_filesize(entries, n, &path, flag_a, &filesize);
+    printf("total %zu\n", block_size);
+    size_width = num_digits(filesize);
+  }
+  for (int i = 0; i < n; ++i)
+  {
+    if (!flag_a && entries[i]->d_name[0] == '.')
+      continue;
+
     if (flag_l)
     {
-      size_t filesize = 0;
-      size_t block_size = get_block_size_and_max_filesize(entries, n, &path, flag_a, &filesize);
-      printf("total %zu\n", block_size);
-      size_width = num_digits(filesize);
+      if (print_long(path.str, entries[i]->d_name, size_width) == FAILURE)
+      {
+        free(path.str);
+        free(entries);
+        return FAILURE;
+      }
     }
-    for (int i = 0; i < n; ++i)
-    {
-      if (!flag_a && entries[i]->d_name[0] == '.')
-        continue;
+    else
+      printf("%s\n", entries[i]->d_name);
 
-      if (flag_l)
-        print_long(path.str, entries[i]->d_name, size_width);
-      else
-        printf("%s\n", entries[i]->d_name);
-
-      free(entries[i]);
-    }
-    free(entries);
+    free(entries[i]);
   }
-
+  free(entries);
   free(path.str);
+
+  return SUCCESS;
 }

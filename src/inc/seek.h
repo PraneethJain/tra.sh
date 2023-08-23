@@ -2,6 +2,6 @@
 #define __SEEK_H
 
 #include "base.h"
-void seek(command c);
+int seek(command c);
 
 #endif

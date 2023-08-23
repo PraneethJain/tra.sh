@@ -1,6 +1,6 @@
 #include "../headers.h"
 
-void warp(command c)
+int warp(command c)
 {
   string cwd = new_string(MAX_STR_LEN);
 
@@ -8,13 +8,17 @@ void warp(command c)
   {
     if (getcwd(cwd.str, cwd.size) == NULL)
     {
-      // Do error handling
+      DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
+      ERROR_PRINT("Could not get current directory\n");
+      return FAILURE;
     }
     chdir(homepath.str);
     strcpy(lastpath.str, cwd.str);
     if (getcwd(cwd.str, cwd.size) == NULL)
     {
-      // Do error handling
+      DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
+      ERROR_PRINT("Could not get current directory\n");
+      return FAILURE;
     }
     printf("%s\n", cwd.str);
   }
@@ -25,7 +29,9 @@ void warp(command c)
     {
       if (getcwd(cwd.str, cwd.size) == NULL)
       {
-        // Do error handling
+        DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
+        ERROR_PRINT("Could not get current directory\n");
+        return FAILURE;
       }
 
       if (c.argv[i][0] == '~')
@@ -36,9 +42,9 @@ void warp(command c)
         strcat(abs_path.str, c.argv[i] + 1);
         if (chdir(abs_path.str) != 0)
         {
-          printf("Cannot warp to %s\n", c.argv[i]);
+          ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
           free(abs_path.str);
-          break;
+          return FAILURE;
         }
         free(abs_path.str);
       }
@@ -46,19 +52,23 @@ void warp(command c)
       {
         if (lastpath.str[0] != '\0')
         {
-          chdir(lastpath.str);
+          if (chdir(lastpath.str) == -1)
+          {
+            ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
+            return FAILURE;
+          }
           strcpy(lastpath.str, cwd.str);
         }
         else
         {
-          printf("OLDPWD not set\n");
-          break;
+          ERROR_PRINT("OLDPWD not set\n");
+          return FAILURE;
         }
       }
-      else if (chdir(c.argv[i]) != 0)
+      else if (chdir(c.argv[i]) == -1)
       {
-        printf("Cannot warp to %s\n", c.argv[i]);
-        break;
+        ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
+        return FAILURE;
       }
       else
       {
@@ -67,10 +77,13 @@ void warp(command c)
 
       if (getcwd(cwd.str, cwd.size) == NULL)
       {
-        // Do error handling
+        DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
+        ERROR_PRINT("Could not get current directory\n");
+        return FAILURE;
       }
       printf("%s\n", cwd.str);
     }
   }
   free(cwd.str);
+  return SUCCESS;
 }
