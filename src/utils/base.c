@@ -26,15 +26,6 @@ void replace(string *s, string a, string b)
   free(temp.str);
 }
 
-char **to_cstring_array(string *s, size_t len)
-{
-  char **res = (char **)malloc(sizeof(char *) * (len + 1));
-  for (size_t i = 0; i < len; ++i)
-    res[i] = s[i].str;
-  res[len] = NULL;
-  return res;
-}
-
 void print_command(command *c)
 {
   for (int i = 0; i < c->argc; ++i)

@@ -17,6 +17,7 @@ size_t get_block_size_and_max_filesize(struct dirent **entries, int n, string *p
 
     struct stat info;
     lstat(cur.str, &info);
+    free(cur.str);
 
     res += info.st_blocks;
 
