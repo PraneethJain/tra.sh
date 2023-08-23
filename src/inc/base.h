@@ -1,6 +1,7 @@
 #ifndef __BASE_H
 #define __BASE_H
 
+#include "colors.h"
 #include <stdio.h>
 #define MAX_COMMANDS 128
 #define MAX_ARGS 16
@@ -39,5 +40,12 @@ int max(int x, int y);
 int min(int x, int y);
 int num_digits(int x);
 bool is_numeric(char *s);
+
+#ifdef DEBUG
+#define DEBUG_PRINT(fmt, args...)                                                                                      \
+  fprintf(stderr, C_YELLOW "DEBUG: %s:%d:%s(): " fmt C_RESET, __FILE__, __LINE__, __func__, ##args)
+#else
+#define DEBUG_PRINT(fmt, args...)
+#endif
 
 #endif
