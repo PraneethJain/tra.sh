@@ -74,7 +74,7 @@ int pastevents(command c)
 
     char *temp;
     int idx = strtoll(c.argv[2], &temp, 10) - 1;
-    if (idx < 0 || idx > (int)h.cur_size)
+    if (idx < 0 || idx > (int)h.cur_size - 1)
     {
       ERROR_PRINT("Index %i out of bounds for pastevents execute\n", idx);
       return FAILURE;
