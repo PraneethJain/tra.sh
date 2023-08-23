@@ -11,6 +11,7 @@ typedef struct string
 {
   char *str;
   size_t size;
+  bool allocated;
 } string;
 
 typedef struct command
@@ -39,6 +40,8 @@ int max(int x, int y);
 int min(int x, int y);
 int num_digits(int x);
 bool is_numeric(char *s);
+
+#define ERROR_PRINT(fmt, args...) fprintf(stderr, C_RED "[ERROR] " fmt C_RESET, ##args)
 
 #ifdef DEBUG
 #define DEBUG_PRINT(fmt, args...)                                                                                      \

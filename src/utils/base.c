@@ -3,9 +3,19 @@
 string new_string(size_t size)
 {
   string s;
-  s.str = (char *)malloc(size * sizeof(char));
   s.size = size;
-  s.str[0] = '\0';
+  s.str = (char *)malloc(size * sizeof(char));
+  if (s.str == NULL)
+  {
+    DEBUG_PRINT("Bad malloc\n");
+    ERROR_PRINT("Ran out of memory!");
+    s.allocated = false;
+  }
+  else
+  {
+    s.allocated = true;
+    s.str[0] = '\0';
+  }
 
   return s;
 }
