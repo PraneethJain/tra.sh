@@ -2,9 +2,8 @@
 
 bool commandify(command *c, string *current_command)
 {
-  char *tok;
   c->argc = 0;
-  while ((tok = strtok(c->argc == 0 ? current_command->str : NULL, delimiters.str)) != NULL)
+  for (char *tok = strtok(current_command->str, delimiters.str); tok != NULL; tok = strtok(NULL, delimiters.str))
     strcpy(c->argv[c->argc++], tok);
 
   return c->argc != 0;
