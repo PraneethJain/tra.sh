@@ -43,7 +43,7 @@ bool is_numeric(char *s);
 
 #ifdef DEBUG
 #define DEBUG_PRINT(fmt, args...)                                                                                      \
-  fprintf(stderr, C_YELLOW "DEBUG: %s:%d:%s(): " fmt C_RESET, __FILE__, __LINE__, __func__, ##args)
+  fprintf(stderr, C_YELLOW "[DEBUG] %s:%d:%s(): " fmt C_RESET, __FILE__, __LINE__, __func__, ##args)
 #else
 #define DEBUG_PRINT(fmt, args...)
 #endif

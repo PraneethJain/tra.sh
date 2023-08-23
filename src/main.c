@@ -25,6 +25,8 @@ void init()
 
   init_history();
   init_prompt();
+
+  DEBUG_PRINT("Initialization Complete\n");
 }
 
 void destroy()
@@ -37,6 +39,7 @@ void destroy()
 
   destroy_prompt();
   destroy_history();
+  DEBUG_PRINT("Destruction Complete\n");
 }
 
 int main()
