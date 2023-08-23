@@ -34,6 +34,7 @@ void remove_process(process_list p, pid_t pid)
       prev->next = next;
       return;
     }
+    prev = prev->next;
     cur = next;
   }
 }
