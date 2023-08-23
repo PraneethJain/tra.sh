@@ -41,6 +41,15 @@ void prompt()
   if (strstr(cwd.str, homepath.str) == cwd.str) // If cwd starts with homepath
     replace(&cwd, homepath, tilde);
 
-  printf("<" C_GREEN "%s" C_RESET "@" C_BLUE "%s" C_RESET ":" C_YELLOW "%s" C_RESET "> ", username.str, hostname.str,
-         cwd.str);
+  if (max_time_taken >= 2)
+  {
+    printf("<" C_GREEN "%s" C_RESET "@" C_BLUE "%s" C_RESET ":" C_YELLOW "%s" C_RESET " %s : %lis"
+           "> ",
+           username.str, hostname.str, cwd.str, slowest_command.argv[0], max_time_taken);
+  }
+  else
+  {
+    printf("<" C_GREEN "%s" C_RESET "@" C_BLUE "%s" C_RESET ":" C_YELLOW "%s" C_RESET "> ", username.str, hostname.str,
+           cwd.str);
+  }
 }

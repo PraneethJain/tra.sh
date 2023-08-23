@@ -33,8 +33,19 @@ void parse_input(string input)
     }
   }
 
+  max_time_taken = 0;
   for (size_t i = 0; i < c.size; ++i)
+  {
+    time_t t_start = time(NULL);
     exec_command(c.arr[i]);
+    time_t t_end = time(NULL);
+
+    if (t_end - t_start > max_time_taken)
+    {
+      max_time_taken = t_end - t_start;
+      slowest_command = c.arr[i];
+    }
+  }
 
   // printf("%zu Commands\n\n", c.size);
   // for (int i = 0; i < c.size; ++i)

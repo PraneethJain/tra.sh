@@ -36,5 +36,7 @@ extern string tilde;
 extern string delimiters;
 extern process_list p;
 extern history h;
+extern time_t max_time_taken;
+extern command slowest_command;
 
 #endif

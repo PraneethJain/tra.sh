@@ -7,6 +7,8 @@ string tilde;
 string delimiters;
 process_list p;
 history h;
+time_t max_time_taken;
+command slowest_command;
 
 void init()
 {
@@ -19,6 +21,7 @@ void init()
   delimiters = new_string(128);
   strcpy(delimiters.str, " \t\n\v\f\r");
   p = init_process_list();
+  max_time_taken = 0;
 
   init_history();
   init_prompt();
