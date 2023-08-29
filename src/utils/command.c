@@ -34,31 +34,23 @@ void parse_input(string input)
   }
 
   max_time_taken = 0;
+  DEBUG_PRINT("Number of commands: %zu\n", c.size);
   for (size_t i = 0; i < c.size; ++i)
   {
     time_t t_start = time(NULL);
+    DEBUG_PRINT("%zu. %s with %i arguments\n", i + 1, c.arr[i].argv[0], c.arr[i].argc);
     exec_command(c.arr[i]);
     time_t t_end = time(NULL);
+    time_t time_taken = t_end - t_start;
+    DEBUG_PRINT("Completed in %li seconds\n", time_taken);
 
-    if (t_end - t_start > max_time_taken)
+    if (time_taken > max_time_taken)
     {
-      max_time_taken = t_end - t_start;
+      max_time_taken = time_taken;
       slowest_command = c.arr[i];
     }
   }
 
-  // printf("%zu Commands\n\n", c.size);
-  // for (int i = 0; i < c.size; ++i)
-  // {
-  //   printf("Command name: %s\n", c.arr[i].argv[0]);
-  //   for (int j = 1; j < c.arr[i].argc; ++j)
-  //   {
-  //     printf("arg%i: %s\n", j, c.arr[i].argv[j]);
-  //   }
-  //   printf("Is background: %i\n", c.arr[i].is_background);
-  //   printf("\n");
-  // }
-  //
   add_event(c);
 }
 
