@@ -3,7 +3,7 @@
 
 #include "colors.h"
 #include <stdio.h>
-#define MAX_COMMANDS 128
+#define MAX_COMMANDS 16
 #define MAX_ARGS 16
 #define MAX_STR_LEN 1024
 

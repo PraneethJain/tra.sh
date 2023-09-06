@@ -23,7 +23,7 @@ A shell written in c.
 # Assumptions
 
 ## General Assumptions
-1. A maximum of 128 delimiter `(; &)` separated commands can be executed in a single line.
+1. A maximum of 16 delimiter `(; &)` separated commands can be executed in a single line.
 2. Each command can take a maximum of 16 arguments.
 3. Each string can have a maximum of 1024 characters.
 4. Flags not recognized by a command will be ignored and the command will be executed accordingly.
