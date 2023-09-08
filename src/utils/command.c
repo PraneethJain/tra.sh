@@ -25,9 +25,7 @@ void sanitize(string s)
       {
         fixed = false;
         for (size_t j = len + 2; j > i; --j)
-        {
           s.str[j] = s.str[j - 2];
-        }
         s.str[i] = ' ';
         s.str[i + 1] = '|';
         s.str[i + 2] = ' ';
@@ -125,19 +123,10 @@ int exec_command(command c)
   int num_subcommands = 0;
   subcommands.arr[num_subcommands].argc = 0;
   for (int i = 0; i < c.argc; ++i)
-  {
     if (strcmp(c.argv[i], "|") == 0)
-    {
-      ++num_subcommands;
-      subcommands.arr[num_subcommands].argc = 0;
-    }
+      subcommands.arr[++num_subcommands].argc = 0;
     else
-    {
-      strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc], c.argv[i]);
-      subcommands.arr[num_subcommands].argc++;
-      subcommands.arr[num_subcommands].is_background = c.is_background;
-    }
-  }
+      strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc++], c.argv[i]);
   ++num_subcommands;
 
   int saved_stdin = dup(STDIN_FILENO);
@@ -188,7 +177,7 @@ int exec_command(command c)
   }
   else
   {
-    if (subcommands.arr[num_subcommands - 1].is_background)
+    if (c.is_background)
     {
       printf("%i\n", pid);
       if (insert_process(p, subcommands.arr[num_subcommands - 1], pid) == FAILURE)
