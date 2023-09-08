@@ -82,6 +82,39 @@ void parse_input(string input)
 
 int exec_command(command c)
 {
+  for (int i = 0; i < c.argc; ++i)
+  {
+    printf("%i-%s\t", i, c.argv[i]);
+  }
+  printf("\n");
+
+  commands subcommands;
+  int num_subcommands = 0;
+  subcommands.arr[num_subcommands].argc = 0;
+  for (int i = 0; i < c.argc; ++i)
+  {
+    if (strcmp(c.argv[i], "|") == 0)
+    {
+      ++num_subcommands;
+      subcommands.arr[num_subcommands].argc = 0;
+    }
+    else
+    {
+      strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc], c.argv[i]);
+      subcommands.arr[num_subcommands].argc++;
+    }
+  }
+  ++num_subcommands;
+
+  for (int i = 0; i < num_subcommands; ++i)
+  {
+    for (int j = 0; j < subcommands.arr[i].argc; ++j)
+    {
+      printf("%i-%s\t", j, subcommands.arr[i].argv[j]);
+    }
+    printf("\n");
+  }
+
   int status;
   if (strcmp(c.argv[0], "exit") == 0)
   {
