@@ -99,7 +99,13 @@ void shift_one(commands *cs, int start_idx)
 
 void insert(commands *cs, int h_idx, int cs_idx)
 {
+  command temp = cs->arr[cs_idx];
   cs->arr[cs_idx] = h.arr[h_idx].arr[0];
+  for (int i = 3; i < temp.argc; ++i)
+  {
+    strcpy(cs->arr[cs_idx].argv[cs->arr[cs_idx].argc++], temp.argv[i]);
+  }
+
   for (size_t i = 1; i < h.arr[h_idx].size; ++i)
   {
     shift_one(cs, cs_idx + i);
@@ -119,7 +125,7 @@ int add_event(commands cs)
     command c = cs.arr[i];
     if (strcmp(c.argv[0], "pastevents") == 0)
     {
-      if (c.argc == 3 && strcmp(c.argv[1], "execute") == 0 && is_numeric(c.argv[2]))
+      if (c.argc >= 3 && strcmp(c.argv[1], "execute") == 0 && is_numeric(c.argv[2]))
       {
         char *temp;
         int idx = strtoll(c.argv[2], &temp, 10) - 1;
