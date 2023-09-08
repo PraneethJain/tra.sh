@@ -81,7 +81,7 @@ void parse_input(string input)
   add_event(c);
 }
 
-int exec_singular(command c)
+int exec_singular(command c, bool to_fork)
 {
   int status;
   if (strcmp(c.argv[0], "exit") == 0)
@@ -111,7 +111,7 @@ int exec_singular(command c)
   }
   else
   {
-    status = system_command(c);
+    status = to_fork ? system_command_with_fork(c) : system_command(c);
   }
 
   return status;
@@ -129,6 +129,9 @@ int exec_command(command c)
       strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc++], c.argv[i]);
   ++num_subcommands;
 
+  if (num_subcommands == 1)
+    return exec_singular(c, true);
+
   int saved_stdin = dup(STDIN_FILENO);
   int saved_stdout = dup(STDOUT_FILENO);
 
@@ -140,7 +143,7 @@ int exec_command(command c)
     {
       ERROR_PRINT("Failed to create pipe!\n");
       return FAILURE;
-    } 
+    }
     pid_t pid = fork();
     if (pid == 0)
     {
@@ -152,7 +155,7 @@ int exec_command(command c)
       dup2(fd[1], STDOUT_FILENO);
       close(fd[1]);
 
-      exec_singular(subcommands.arr[i]);
+      exec_singular(subcommands.arr[i], false);
       exit(1);
     }
     else
@@ -163,7 +166,6 @@ int exec_command(command c)
     }
   }
 
-
   pid_t pid = fork();
   if (pid == 0)
   {
@@ -172,7 +174,7 @@ int exec_command(command c)
       dup2(prev_pipe, STDIN_FILENO);
       close(prev_pipe);
     }
-    exec_singular(subcommands.arr[num_subcommands - 1]);
+    exec_singular(subcommands.arr[num_subcommands - 1], false);
     exit(1);
   }
   else
