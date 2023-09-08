@@ -17,6 +17,7 @@ process_list init_process_list()
 
 void print_process_list()
 {
+  merge_sort(&p);
   process_list cur = p->next;
   while (cur != NULL)
   {

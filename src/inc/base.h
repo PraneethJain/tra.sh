@@ -3,6 +3,7 @@
 
 #include "colors.h"
 #include <stdio.h>
+#include <sys/types.h>
 #define MAX_COMMANDS 16
 #define MAX_ARGS 16
 #define MAX_STR_LEN 1024
@@ -30,6 +31,15 @@ typedef struct commands
   size_t size;
 } commands;
 
+typedef struct process_list_st
+{
+  command c;
+  pid_t pid;
+  struct process_list_st *next;
+} process_list_st;
+
+typedef process_list_st *process_list;
+
 string new_string(size_t size);
 void replace(string *s, string a, string b);
 
@@ -43,6 +53,8 @@ int max(int x, int y);
 int min(int x, int y);
 int num_digits(int x);
 bool is_numeric(char *s);
+
+void merge_sort(process_list *head);
 
 #define ERROR_PRINT(fmt, args...) fprintf(stderr, C_RED "[ERROR] " fmt C_RESET, ##args)
 
