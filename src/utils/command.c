@@ -83,6 +83,42 @@ void parse_input(string input)
   add_event(c);
 }
 
+int exec_singular(command c)
+{
+  int status;
+  if (strcmp(c.argv[0], "exit") == 0)
+  {
+    *EXIT = true;
+    status = SUCCESS;
+  }
+  else if (strcmp(c.argv[0], "warp") == 0)
+  {
+    status = warp(c);
+  }
+  else if (strcmp(c.argv[0], "peek") == 0)
+  {
+    status = peek(c);
+  }
+  else if (strcmp(c.argv[0], "proclore") == 0)
+  {
+    status = proclore(c);
+  }
+  else if (strcmp(c.argv[0], "pastevents") == 0)
+  {
+    status = pastevents(c);
+  }
+  else if (strcmp(c.argv[0], "seek") == 0)
+  {
+    status = seek(c);
+  }
+  else
+  {
+    status = system_command(c);
+  }
+
+  return status;
+}
+
 int exec_command(command c)
 {
   commands subcommands;
@@ -104,57 +140,69 @@ int exec_command(command c)
   }
   ++num_subcommands;
 
-  for (int i = 0; i < num_subcommands; ++i)
+  int saved_stdin = dup(STDIN_FILENO);
+  int saved_stdout = dup(STDOUT_FILENO);
+
+  int fd[2];
+  int prev_pipe = STDIN_FILENO;
+  for (int i = 0; i < num_subcommands - 1; ++i)
   {
+    if (pipe(fd) == -1)
+    {
+      ERROR_PRINT("Failed to create pipe!\n");
+      return FAILURE;
+    } 
     pid_t pid = fork();
     if (pid == 0)
     {
-      if (strcmp(subcommands.arr[i].argv[0], "exit") == 0)
+      if (prev_pipe != STDIN_FILENO)
       {
-        *EXIT = true;
+        dup2(prev_pipe, STDIN_FILENO);
+        close(prev_pipe);
       }
-      else if (strcmp(subcommands.arr[i].argv[0], "warp") == 0)
-      {
-        warp(subcommands.arr[i]);
-      }
-      else if (strcmp(subcommands.arr[i].argv[0], "peek") == 0)
-      {
-        peek(subcommands.arr[i]);
-      }
-      else if (strcmp(subcommands.arr[i].argv[0], "proclore") == 0)
-      {
-        proclore(subcommands.arr[i]);
-      }
-      else if (strcmp(subcommands.arr[i].argv[0], "pastevents") == 0)
-      {
-        pastevents(subcommands.arr[i]);
-      }
-      else if (strcmp(subcommands.arr[i].argv[0], "seek") == 0)
-      {
-        seek(subcommands.arr[i]);
-      }
-      else
-      {
-        system_command(subcommands.arr[i]);
-      }
+      dup2(fd[1], STDOUT_FILENO);
+      close(fd[1]);
 
+      exec_singular(subcommands.arr[i]);
       exit(1);
     }
     else
     {
-      if (subcommands.arr[i].is_background)
-      {
-        printf("%i\n", pid);
-        if (insert_process(p, subcommands.arr[i], pid) == FAILURE)
-          return FAILURE;
-      }
-      else
-      {
-        int status;
-        waitpid(pid, &status, 0);
-      }
+      close(prev_pipe);
+      close(fd[1]);
+      prev_pipe = fd[0];
     }
   }
+
+
+  pid_t pid = fork();
+  if (pid == 0)
+  {
+    if (prev_pipe != STDIN_FILENO)
+    {
+      dup2(prev_pipe, STDIN_FILENO);
+      close(prev_pipe);
+    }
+    exec_singular(subcommands.arr[num_subcommands - 1]);
+    exit(1);
+  }
+  else
+  {
+    if (subcommands.arr[num_subcommands - 1].is_background)
+    {
+      printf("%i\n", pid);
+      if (insert_process(p, subcommands.arr[num_subcommands - 1], pid) == FAILURE)
+        return FAILURE;
+    }
+    else
+    {
+      int status;
+      waitpid(pid, &status, 0);
+    }
+  }
+
+  dup2(saved_stdout, STDOUT_FILENO);
+  dup2(saved_stdin, STDIN_FILENO);
 
   return SUCCESS;
 }
