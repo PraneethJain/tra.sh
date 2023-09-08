@@ -31,6 +31,7 @@
 #include "inc/proclore.h"
 #include "inc/procs.h"
 #include "inc/prompt.h"
+#include "inc/signals.h"
 #include "inc/seek.h"
 #include "inc/system.h"
 #include "inc/warp.h"
