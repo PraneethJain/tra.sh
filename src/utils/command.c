@@ -9,9 +9,35 @@ bool commandify(command *c, string *current_command)
   return c->argc != 0;
 }
 
+void sanitize(string s)
+{
+  bool fixed = false;
+  while (!fixed)
+  {
+    size_t len = strlen(s.str);
+    fixed = true;
+    for (size_t i = 1; i < len - 1; ++i)
+    {
+      if (s.str[i] == '|' && !(s.str[i - 1] == ' ' && s.str[i + 1] == ' '))
+      {
+        fixed = false;
+        for (size_t j = len + 2; j > i; --j)
+        {
+          s.str[j] = s.str[j - 2];
+        }
+        s.str[i] = ' ';
+        s.str[i + 1] = '|';
+        s.str[i + 2] = ' ';
+        break;
+      }
+    }
+  }
+}
+
 void parse_input(string input)
 {
   input.str[strcspn(input.str, "\r\n")] = '\0';
+  sanitize(input);
   commands c;
   c.size = 0;
 
