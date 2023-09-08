@@ -20,6 +20,7 @@
 #include <unistd.h>
 
 #include "inc/activities.h"
+#include "inc/bg.h"
 #include "inc/base.h"
 #include "inc/colors.h"
 #include "inc/command.h"

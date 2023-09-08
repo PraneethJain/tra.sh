@@ -121,6 +121,10 @@ int exec_singular(command c, bool to_fork)
   {
     status = fg(c);
   }
+  else if (strcmp(c.argv[0], "fg") == 0)
+  {
+    status = bg(c);
+  }
   else
   {
     status = to_fork ? system_command_with_fork(c) : system_command(c);
