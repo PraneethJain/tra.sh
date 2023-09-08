@@ -101,6 +101,7 @@ void insert(commands *cs, int h_idx, int cs_idx)
 {
   command temp = cs->arr[cs_idx];
   cs->arr[cs_idx] = h.arr[h_idx].arr[0];
+  cs->arr[cs_idx].is_background = temp.is_background;
   for (int i = 3; i < temp.argc; ++i)
   {
     strcpy(cs->arr[cs_idx].argv[cs->arr[cs_idx].argc++], temp.argv[i]);
