@@ -30,7 +30,7 @@ int init()
     return FAILURE;
 
   tilde = new_string(2);
-  if (!lastpath.allocated)
+  if (!tilde.allocated)
     return FAILURE;
   strcpy(tilde.str, "~\0");
 
