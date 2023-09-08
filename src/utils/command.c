@@ -113,6 +113,10 @@ int exec_singular(command c, bool to_fork)
   {
     status = activities(c);
   }
+  else if (strcmp(c.argv[0], "ping") == 0)
+  {
+    status = ping(c);
+  }
   else
   {
     status = to_fork ? system_command_with_fork(c) : system_command(c);

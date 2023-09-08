@@ -25,6 +25,7 @@
 #include "inc/command.h"
 #include "inc/pastevents.h"
 #include "inc/peek.h"
+#include "inc/ping.h"
 #include "inc/proclore.h"
 #include "inc/procs.h"
 #include "inc/prompt.h"
