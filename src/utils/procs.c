@@ -85,7 +85,7 @@ int remove_processes()
     done = true;
     for (process_list cur = p->next; cur != NULL; cur = cur->next)
     {
-      if (waitpid(cur->pid, &status, WNOHANG) != 0)
+      if (waitpid(cur->pid, &status, WNOHANG | WUNTRACED) != 0)
       {
         if (remove_process(cur->pid) == FAILURE)
           return FAILURE;
