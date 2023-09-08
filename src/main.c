@@ -59,7 +59,7 @@ void destroy()
   free(lastpath.str);
   free(tilde.str);
   free(delimiters.str);
-  free_process_list(p);
+  free_process_list();
 
   destroy_prompt();
   destroy_history();
@@ -72,7 +72,7 @@ int main()
     return FAILURE;
   while (!*EXIT)
   {
-    remove_processes(p);
+    remove_processes();
     prompt();
     string input = new_string(MAX_STR_LEN);
     fgets(input.str, input.size, stdin);

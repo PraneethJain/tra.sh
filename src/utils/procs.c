@@ -15,7 +15,7 @@ process_list init_process_list()
   return p;
 }
 
-int insert_process(process_list p, command c, pid_t pid)
+int insert_process(command c, pid_t pid)
 {
   process_list new = (process_list)malloc(sizeof(process_list_st));
   if (new == NULL)
@@ -54,7 +54,7 @@ int remove_process(process_list p, pid_t pid)
   return FAILURE;
 }
 
-int remove_processes(process_list p)
+int remove_processes()
 {
   pid_t to_kill;
   int status;
@@ -65,7 +65,7 @@ int remove_processes(process_list p)
   return SUCCESS;
 }
 
-void free_process_list(process_list p)
+void free_process_list()
 {
   process_list cur = p->next;
   while (cur != NULL)

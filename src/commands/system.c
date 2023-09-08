@@ -39,7 +39,7 @@ int system_command_with_fork(command c)
     if (c.is_background)
     {
       printf("%i\n", pid);
-      if (insert_process(p, c, pid) == FAILURE)
+      if (insert_process(c, pid) == FAILURE)
         return FAILURE;
     }
     else
