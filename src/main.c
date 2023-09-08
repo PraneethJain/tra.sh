@@ -1,6 +1,6 @@
 #include "headers.h"
 
-bool EXIT;
+bool *EXIT;
 string homepath;
 string lastpath;
 string tilde;
@@ -12,7 +12,8 @@ command slowest_command;
 
 int init()
 {
-  EXIT = false;
+  EXIT = mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+  *EXIT = false;
   homepath = new_string(MAX_STR_LEN);
   if (!homepath.allocated)
     return FAILURE;
@@ -69,7 +70,7 @@ int main()
 {
   if (init() == FAILURE)
     return FAILURE;
-  while (!EXIT)
+  while (!*EXIT)
   {
     remove_processes(p);
     prompt();

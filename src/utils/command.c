@@ -11,6 +11,9 @@ bool commandify(command *c, string *current_command)
 
 void sanitize(string s)
 {
+  if (s.str[0] == '\0')
+    return;
+
   bool fixed = false;
   while (!fixed)
   {
@@ -82,12 +85,6 @@ void parse_input(string input)
 
 int exec_command(command c)
 {
-  for (int i = 0; i < c.argc; ++i)
-  {
-    printf("%i-%s\t", i, c.argv[i]);
-  }
-  printf("\n");
-
   commands subcommands;
   int num_subcommands = 0;
   subcommands.arr[num_subcommands].argc = 0;
@@ -102,49 +99,62 @@ int exec_command(command c)
     {
       strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc], c.argv[i]);
       subcommands.arr[num_subcommands].argc++;
+      subcommands.arr[num_subcommands].is_background = c.is_background;
     }
   }
   ++num_subcommands;
 
   for (int i = 0; i < num_subcommands; ++i)
   {
-    for (int j = 0; j < subcommands.arr[i].argc; ++j)
+    pid_t pid = fork();
+    if (pid == 0)
     {
-      printf("%i-%s\t", j, subcommands.arr[i].argv[j]);
+      if (strcmp(subcommands.arr[i].argv[0], "exit") == 0)
+      {
+        *EXIT = true;
+      }
+      else if (strcmp(subcommands.arr[i].argv[0], "warp") == 0)
+      {
+        warp(subcommands.arr[i]);
+      }
+      else if (strcmp(subcommands.arr[i].argv[0], "peek") == 0)
+      {
+        peek(subcommands.arr[i]);
+      }
+      else if (strcmp(subcommands.arr[i].argv[0], "proclore") == 0)
+      {
+        proclore(subcommands.arr[i]);
+      }
+      else if (strcmp(subcommands.arr[i].argv[0], "pastevents") == 0)
+      {
+        pastevents(subcommands.arr[i]);
+      }
+      else if (strcmp(subcommands.arr[i].argv[0], "seek") == 0)
+      {
+        seek(subcommands.arr[i]);
+      }
+      else
+      {
+        system_command(subcommands.arr[i]);
+      }
+
+      exit(1);
     }
-    printf("\n");
+    else
+    {
+      if (subcommands.arr[i].is_background)
+      {
+        printf("%i\n", pid);
+        if (insert_process(p, subcommands.arr[i], pid) == FAILURE)
+          return FAILURE;
+      }
+      else
+      {
+        int status;
+        waitpid(pid, &status, 0);
+      }
+    }
   }
 
-  int status;
-  if (strcmp(c.argv[0], "exit") == 0)
-  {
-    EXIT = true;
-    status = SUCCESS;
-  }
-  else if (strcmp(c.argv[0], "warp") == 0)
-  {
-    status = warp(c);
-  }
-  else if (strcmp(c.argv[0], "peek") == 0)
-  {
-    status = peek(c);
-  }
-  else if (strcmp(c.argv[0], "proclore") == 0)
-  {
-    status = proclore(c);
-  }
-  else if (strcmp(c.argv[0], "pastevents") == 0)
-  {
-    status = pastevents(c);
-  }
-  else if (strcmp(c.argv[0], "seek") == 0)
-  {
-    status = seek(c);
-  }
-  else
-  {
-    status = system_command(c);
-  }
-
-  return status;
+  return SUCCESS;
 }
