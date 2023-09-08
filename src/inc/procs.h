@@ -13,8 +13,9 @@ typedef struct process_list_st
 typedef process_list_st *process_list;
 
 process_list init_process_list();
-int insert_process(process_list p, command c, pid_t pid);
-int remove_processes(process_list p);
-void free_process_list(process_list p);
+int insert_process(command c, pid_t pid);
+void print_process_list();
+int remove_processes();
+void free_process_list();
 
 #endif

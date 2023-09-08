@@ -109,6 +109,10 @@ int exec_singular(command c, bool to_fork)
   {
     status = seek(c);
   }
+  else if (strcmp(c.argv[0], "activities") == 0)
+  {
+    status = activities(c);
+  }
   else
   {
     status = to_fork ? system_command_with_fork(c) : system_command(c);
@@ -182,7 +186,7 @@ int exec_command(command c)
     if (c.is_background)
     {
       printf("%i\n", pid);
-      if (insert_process(p, subcommands.arr[num_subcommands - 1], pid) == FAILURE)
+      if (insert_process(subcommands.arr[num_subcommands - 1], pid) == FAILURE)
         return FAILURE;
     }
     else
