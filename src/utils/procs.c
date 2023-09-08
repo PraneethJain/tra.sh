@@ -15,6 +15,28 @@ process_list init_process_list()
   return p;
 }
 
+void print_process_list()
+{
+  process_list cur = p->next;
+  while (cur != NULL)
+  {
+    printf("%i : ", cur->pid);
+    print_command(&cur->c);
+    printf(" - ");
+    int status;
+    if (waitpid(cur->pid, &status, WNOHANG) == 0)
+    {
+      printf("Running");
+    }
+    else
+    {
+      printf("Stopped");
+    }
+    printf("\n");
+    cur = cur->next;
+  }
+}
+
 int insert_process(command c, pid_t pid)
 {
   process_list new = (process_list)malloc(sizeof(process_list_st));
@@ -32,7 +54,7 @@ int insert_process(command c, pid_t pid)
   return SUCCESS;
 }
 
-int remove_process(process_list p, pid_t pid)
+int remove_process(pid_t pid)
 {
   process_list cur = p->next;
   process_list prev = p;
@@ -56,11 +78,25 @@ int remove_process(process_list p, pid_t pid)
 
 int remove_processes()
 {
-  pid_t to_kill;
-  int status;
-  while ((to_kill = waitpid(-1, &status, WNOHANG)) > 0)
-    if (remove_process(p, to_kill) == FAILURE)
-      return FAILURE;
+  bool done = false;
+  while (!done)
+  {
+    int status;
+    done = true;
+    for (process_list cur = p->next; cur != NULL; cur = cur->next)
+    {
+      if (waitpid(cur->pid, &status, WNOHANG) != 0)
+      {
+        if (remove_process(cur->pid) == FAILURE)
+          return FAILURE;
+        else
+        {
+          done = false;
+          break;
+        }
+      }
+    }
+  }
 
   return SUCCESS;
 }
