@@ -55,8 +55,7 @@ typedef struct trash
   command slowest_command;
 } trash;
 
-extern trash state;
-// extern string input;
+extern trash *state;
 
 
 #endif

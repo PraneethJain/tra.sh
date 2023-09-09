@@ -53,8 +53,8 @@ int proclore(command c)
     exe_path.str[res] = '\0';
   }
 
-  if (strstr(exe_path.str, state.homepath) == exe_path.str) // If cwd starts with homepath
-    replace(&exe_path, state.homepath, state.tilde);
+  if (strstr(exe_path.str, state->homepath) == exe_path.str) // If cwd starts with homepath
+    replace(&exe_path, state->homepath, state->tilde);
 
   printf("pid: %i\n", pid);
   printf("Process Status: %c%c\n", status, pid == getpid() ? '+' : ' ');

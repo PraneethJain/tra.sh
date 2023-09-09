@@ -1,25 +1,28 @@
 #include "headers.h"
 
-trash state;
+trash *state;
 
 int init()
 {
+
+  state = mmap(NULL, sizeof(trash), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
   if (init_signals() == FAILURE)
     return FAILURE;
-  state.EXIT = false;
-  if (getcwd(state.homepath, MAX_STR_LEN) == NULL)
+  state->EXIT = false;
+  if (getcwd(state->homepath, MAX_STR_LEN) == NULL)
   {
     DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
     ERROR_PRINT("Could not get current directory\n");
     return FAILURE;
   }
 
-  state.input[0] = '\0';
-  state.lastpath[0] = '\0';
-  strcpy(state.tilde, "~\0");
-  strcpy(state.delimiters, " \t\n\v\f\r");
-  state.procs.length = 0;
-  state.max_time_taken = 0;
+  state->input[0] = '\0';
+  state->lastpath[0] = '\0';
+  strcpy(state->tilde, "~\0");
+  strcpy(state->delimiters, " \t\n\v\f\r");
+  state->procs.length = 0;
+  state->max_time_taken = 0;
 
   if (init_history() == FAILURE)
     return FAILURE;
@@ -35,6 +38,7 @@ void destroy()
 {
   destroy_prompt();
   destroy_history();
+  munmap(state, sizeof(trash));
   DEBUG_PRINT("Destruction Complete\n");
 }
 
@@ -42,7 +46,7 @@ int main()
 {
   if (init() == FAILURE)
     return FAILURE;
-  while (!state.EXIT)
+  while (!state->EXIT)
   {
     remove_zombie_processes();
     prompt();

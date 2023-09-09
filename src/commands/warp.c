@@ -12,8 +12,8 @@ int warp(command c)
       ERROR_PRINT("Could not get current directory\n");
       return FAILURE;
     }
-    chdir(state.homepath);
-    strcpy(state.lastpath, cwd.str);
+    chdir(state->homepath);
+    strcpy(state->lastpath, cwd.str);
     if (getcwd(cwd.str, cwd.size) == NULL)
     {
       DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
@@ -36,9 +36,9 @@ int warp(command c)
 
       if (c.argv[i][0] == '~')
       {
-        strcpy(state.lastpath, cwd.str);
+        strcpy(state->lastpath, cwd.str);
         string abs_path = new_string(MAX_STR_LEN);
-        strcpy(abs_path.str, state.homepath);
+        strcpy(abs_path.str, state->homepath);
         strcat(abs_path.str, c.argv[i] + 1);
         if (chdir(abs_path.str) != 0)
         {
@@ -50,14 +50,14 @@ int warp(command c)
       }
       else if (strcmp(c.argv[i], "-") == 0)
       {
-        if (state.lastpath[0] != '\0')
+        if (state->lastpath[0] != '\0')
         {
-          if (chdir(state.lastpath) == -1)
+          if (chdir(state->lastpath) == -1)
           {
             ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
             return FAILURE;
           }
-          strcpy(state.lastpath, cwd.str);
+          strcpy(state->lastpath, cwd.str);
         }
         else
         {
@@ -72,7 +72,7 @@ int warp(command c)
       }
       else
       {
-        strcpy(state.lastpath, cwd.str);
+        strcpy(state->lastpath, cwd.str);
       }
 
       if (getcwd(cwd.str, cwd.size) == NULL)
