@@ -25,6 +25,8 @@ typedef struct command
   int argc;
   char argv[MAX_ARGS][MAX_STR_LEN];
   bool is_background;
+  int infile;
+  int outfile;
 } command;
 
 typedef struct commands

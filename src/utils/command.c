@@ -138,22 +138,119 @@ int exec_command(command c)
 {
   commands subcommands;
   int num_subcommands = 0;
+  subcommands.arr[0].infile = -1;
+  subcommands.arr[0].outfile = -1;
   subcommands.arr[num_subcommands].argc = 0;
-  for (int i = 0; i < c.argc; ++i)
-    if (strcmp(c.argv[i], "|") == 0)
-      subcommands.arr[++num_subcommands].argc = 0;
+  int i = 0;
+  while (i <= c.argc)
+  {
+    if (i == c.argc || strcmp(c.argv[i], "|") == 0)
+    {
+      if (subcommands.arr[num_subcommands].argc == 0)
+      {
+        ERROR_PRINT("Found empty pipe!\n");
+        return FAILURE;
+      }
+      ++num_subcommands;
+      subcommands.arr[num_subcommands].argc = 0;
+      subcommands.arr[num_subcommands].outfile = -1;
+      subcommands.arr[num_subcommands].infile = -1;
+      ++i;
+    }
     else
-      strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc++], c.argv[i]);
-  ++num_subcommands;
-
+    {
+      if (strcmp(c.argv[i], "<") == 0)
+      {
+        if (subcommands.arr[num_subcommands].infile != -1)
+        {
+          ERROR_PRINT("Multiple inputs found!\n");
+          return FAILURE;
+        }
+        if (i + 1 >= c.argc)
+        {
+          ERROR_PRINT("No input file provided!\n");
+          return FAILURE;
+        }
+        subcommands.arr[num_subcommands].infile = open(c.argv[i + 1], O_RDONLY);
+        if (subcommands.arr[num_subcommands].infile == -1)
+        {
+          ERROR_PRINT("Failed to read %s\n", c.argv[i + 1]);
+          return FAILURE;
+        }
+        i += 2;
+      }
+      else if (strcmp(c.argv[i], ">") == 0)
+      {
+        if (subcommands.arr[num_subcommands].outfile != -1)
+        {
+          ERROR_PRINT("Multiple outputs found!\n");
+          return FAILURE;
+        }
+        if (i + 1 >= c.argc)
+        {
+          ERROR_PRINT("No output file provided!\n");
+          return FAILURE;
+        }
+        if (i + 2 != c.argc)
+        {
+          ERROR_PRINT("Output redirection has to be last pipe operation!\n");
+          return FAILURE;
+        }
+        subcommands.arr[num_subcommands].outfile = open(c.argv[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+        if (subcommands.arr[num_subcommands].outfile == -1)
+        {
+          ERROR_PRINT("Failed to write %s\n", c.argv[i + 1]);
+          return FAILURE;
+        }
+        i += 2;
+      }
+      else if (strcmp(c.argv[i], ">>") == 0)
+      {
+        if (subcommands.arr[num_subcommands].outfile != -1)
+        {
+          ERROR_PRINT("Multiple outputs found!\n");
+          return FAILURE;
+        }
+        if (i + 1 >= c.argc)
+        {
+          ERROR_PRINT("No output file provided!\n");
+          return FAILURE;
+        }
+        if (i + 2 != c.argc)
+        {
+          ERROR_PRINT("Output redirection has to be last pipe operation!\n");
+          return FAILURE;
+        }
+        subcommands.arr[num_subcommands].outfile = open(c.argv[i + 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
+        if (subcommands.arr[num_subcommands].outfile == -1)
+        {
+          ERROR_PRINT("Failed to write %s\n", c.argv[i + 1]);
+          return FAILURE;
+        }
+        i += 2;
+      }
+      else
+      {
+        strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc++], c.argv[i]);
+        subcommands.arr[num_subcommands].is_background = c.is_background;
+        i += 1;
+      }
+    }
+  }
   int saved_stdin = dup(STDIN_FILENO);
   int saved_stdout = dup(STDOUT_FILENO);
 
   int fd[2];
   int prev_pipe = STDIN_FILENO;
-  for (int i = 0; i < num_subcommands - 1; ++i)
+  for (int i = 0; i < num_subcommands; ++i)
   {
-    if (strcmp(subcommands.arr[i].argv[0], "pastevents") == 0)
+    if (pipe(fd) == -1)
+    {
+      ERROR_PRINT("Failed to create pipe!\n");
+      return FAILURE;
+    }
+
+    if (i > 0 && strcmp(subcommands.arr[i].argv[0], "pastevents") == 0)
     {
       dup2(saved_stdin, STDIN_FILENO);
       dup2(saved_stdout, STDOUT_FILENO);
@@ -161,40 +258,31 @@ int exec_command(command c)
       return 2;
     }
 
-    if (pipe(fd) == -1)
+    dup2(prev_pipe, STDIN_FILENO);                   // old fd[0]
+    if (subcommands.arr[i].infile != -1)             // If infile is present
+      dup2(subcommands.arr[i].infile, STDIN_FILENO); // Then set stdin to infile
+
+    if (i == num_subcommands - 1)        // If last command
+      dup2(saved_stdout, STDOUT_FILENO); // Then reset stdout
+    else
+      dup2(fd[1], STDOUT_FILENO); // Otherwise fd[1] is stdout
+
+    if (subcommands.arr[i].outfile != -1) // If outfile is present
     {
-      ERROR_PRINT("Failed to create pipe!\n");
-      return FAILURE;
+      dup2(subcommands.arr[i].outfile, STDOUT_FILENO); // Then set stdout to outfile
+      close(subcommands.arr[i].outfile);
     }
-    if (prev_pipe != STDIN_FILENO)
-    {
-      dup2(prev_pipe, STDIN_FILENO);
-      close(prev_pipe);
-    }
-    dup2(fd[1], STDOUT_FILENO);
+
     exec_singular(subcommands.arr[i]);
-    close(prev_pipe);
     close(fd[1]);
-    prev_pipe = fd[0];
+    prev_pipe = fd[0]; // fd[0] is output of current, which will be input of next
   }
 
-  if (num_subcommands > 1 && strcmp(subcommands.arr[num_subcommands - 1].argv[0], "pastevents") == 0)
-  {
-    dup2(saved_stdin, STDIN_FILENO);
-    dup2(saved_stdout, STDOUT_FILENO);
-    ERROR_PRINT("Cannot pipe with pastevents!\n");
-    return 2;
-  }
-
-  if (prev_pipe != STDIN_FILENO)
-  {
-    dup2(prev_pipe, STDIN_FILENO);
-    close(prev_pipe);
-  }
-
-  dup2(saved_stdout, STDOUT_FILENO);
-  exec_singular(subcommands.arr[num_subcommands - 1]);
   dup2(saved_stdin, STDIN_FILENO);
+  dup2(saved_stdout, STDOUT_FILENO);
+
+  close(saved_stdin);
+  close(saved_stdout);
 
   return SUCCESS;
 }

@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <grp.h>
 #include <limits.h>
 #include <math.h>
@@ -56,6 +57,5 @@ typedef struct trash
 } trash;
 
 extern trash *state;
-
 
 #endif
