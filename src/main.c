@@ -78,7 +78,7 @@ int main()
     return FAILURE;
   while (!*EXIT)
   {
-    remove_processes();
+    remove_zombie_processes();
     prompt();
     read_line_raw();
     parse_input();

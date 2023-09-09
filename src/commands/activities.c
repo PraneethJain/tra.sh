@@ -8,6 +8,6 @@ int activities(command c)
     return FAILURE;
   }
 
-  print_process_list();
+  print_processes();
   return SUCCESS;
 }

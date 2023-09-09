@@ -1,6 +1,6 @@
 #include "../headers.h"
 
-void print_process_list()
+void print_processes()
 {
   for (size_t i = 0; i < state.procs.length; ++i)
   {
@@ -48,7 +48,7 @@ int insert_process(command c, pid_t pid)
   return SUCCESS;
 }
 
-int remove_processes()
+int remove_zombie_processes()
 {
   bool done = false;
   while (!done)
