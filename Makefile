@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 
-SRCS = src/main.c src/commands/activities.c src/commands/bg.c src/commands/fg.c src/commands/pastevents.c src/commands/peek.c src/commands/ping.c src/commands/proclore.c src/commands/seek.c src/commands/system.c src/commands/warp.c src/utils/base.c src/utils/command.c src/utils/signals.c src/utils/procs.c src/utils/prompt.c 
+SRCS = src/main.c src/commands/activities.c src/commands/bg.c src/commands/fg.c src/commands/pastevents.c src/commands/peek.c src/commands/ping.c src/commands/proclore.c src/commands/seek.c src/commands/system.c src/commands/warp.c src/utils/base.c src/utils/command.c src/utils/signals.c src/utils/procs.c src/utils/prompt.c src/utils/rawmode.c 
 OBJS = $(SRCS:.c=.o)
 EXE = trash
 

@@ -76,8 +76,7 @@ int main()
   {
     remove_processes();
     prompt();
-    string input = new_string(MAX_STR_LEN);
-    fgets(input.str, input.size, stdin);
+    string input = read_line_raw();
     parse_input(input);
     free(input.str);
   }

@@ -2,6 +2,7 @@
 #define HEADERS_H_
 
 #include <assert.h>
+#include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
 #include <grp.h>
@@ -17,6 +18,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -32,6 +34,7 @@
 #include "inc/proclore.h"
 #include "inc/procs.h"
 #include "inc/prompt.h"
+#include "inc/rawmode.h"
 #include "inc/seek.h"
 #include "inc/signals.h"
 #include "inc/system.h"
