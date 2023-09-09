@@ -49,14 +49,14 @@ int prompt()
     return FAILURE;
   }
 
-  if (strstr(cwd.str, homepath.str) == cwd.str) // If cwd starts with homepath
-    replace(&cwd, homepath, tilde);
+  if (strstr(cwd.str, state.homepath) == cwd.str) // If cwd starts with homepath
+    replace(&cwd, state.homepath, state.tilde);
 
-  if (max_time_taken >= 2)
+  if (state.max_time_taken >= 2)
   {
     printf("<" C_GREEN "%s" C_RESET "@" C_BLUE "%s" C_RESET ":" C_YELLOW "%s" C_RESET " %s : %lis"
            "> ",
-           username.str, hostname.str, cwd.str, slowest_command.argv[0], max_time_taken);
+           username.str, hostname.str, cwd.str, state.slowest_command.argv[0], state.max_time_taken);
   }
   else
   {

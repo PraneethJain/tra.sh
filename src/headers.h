@@ -44,6 +44,7 @@ typedef struct trash
 {
   bool EXIT;
   char input[MAX_STR_LEN];
+  size_t input_length;
   char homepath[MAX_STR_LEN];
   char lastpath[MAX_STR_LEN];
   char tilde[2];
@@ -52,10 +53,10 @@ typedef struct trash
   history h;
   time_t max_time_taken;
   command slowest_command;
-
 } trash;
 
 extern trash state;
+// extern string input;
 
 
 #endif

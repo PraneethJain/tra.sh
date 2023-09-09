@@ -3,32 +3,32 @@
 bool commandify(command *c, string *current_command)
 {
   c->argc = 0;
-  for (char *tok = strtok(current_command->str, delimiters.str); tok != NULL; tok = strtok(NULL, delimiters.str))
+  for (char *tok = strtok(current_command->str, state.delimiters); tok != NULL; tok = strtok(NULL, state.delimiters))
     strcpy(c->argv[c->argc++], tok);
 
   return c->argc != 0;
 }
 
-void sanitize(string s)
+void sanitize()
 {
-  if (s.str[0] == '\0')
+  if (state.input[0] == '\0')
     return;
 
   bool fixed = false;
   while (!fixed)
   {
-    size_t len = strlen(s.str);
     fixed = true;
-    for (size_t i = 1; i < len - 1; ++i)
+    for (size_t i = 1; i < state.input_length - 1; ++i)
     {
-      if (s.str[i] == '|' && !(s.str[i - 1] == ' ' && s.str[i + 1] == ' '))
+      if (state.input[i] == '|' && !(state.input[i - 1] == ' ' && state.input[i + 1] == ' '))
       {
         fixed = false;
-        for (size_t j = len + 2; j > i; --j)
-          s.str[j] = s.str[j - 2];
-        s.str[i] = ' ';
-        s.str[i + 1] = '|';
-        s.str[i + 2] = ' ';
+        for (size_t j = state.input_length + 2; j > i; --j)
+          state.input[j] = state.input[j - 2];
+        state.input[i] = ' ';
+        state.input[i + 1] = '|';
+        state.input[i + 2] = ' ';
+        state.input_length = strlen(state.input);
         break;
       }
     }
@@ -37,20 +37,20 @@ void sanitize(string s)
 
 void parse_input()
 {
-  sanitize(input);
+  sanitize();
   commands c;
   c.size = 0;
 
   size_t cur_command_len;
-  for (size_t cur_ptr = 0; cur_ptr < input.length; cur_ptr += cur_command_len + 1)
+  for (size_t cur_ptr = 0; cur_ptr < state.input_length; cur_ptr += cur_command_len + 1)
   {
-    if ((cur_command_len = strcspn(input.str + cur_ptr, ";&")) > 0)
+    if ((cur_command_len = strcspn(state.input + cur_ptr, ";&")) > 0)
     {
-      c.arr[c.size].is_background = input.str[cur_ptr + cur_command_len] == '&';
+      c.arr[c.size].is_background = state.input[cur_ptr + cur_command_len] == '&';
 
-      input.str[cur_ptr + cur_command_len] = '\0';
-      string current_command = new_string(strlen(input.str + cur_ptr) + 1);
-      strcpy(current_command.str, input.str + cur_ptr);
+      state.input[cur_ptr + cur_command_len] = '\0';
+      string current_command = new_string(strlen(state.input + cur_ptr) + 1);
+      strcpy(current_command.str, state.input + cur_ptr);
 
       // If command is valid then move to next index, otherwise stay at same index.
       c.size += commandify(&c.arr[c.size], &current_command);
@@ -58,7 +58,7 @@ void parse_input()
     }
   }
 
-  max_time_taken = 0;
+  state.max_time_taken = 0;
   DEBUG_PRINT("Number of commands: %zu\n", c.size);
   for (size_t i = 0; i < c.size; ++i)
   {
@@ -69,10 +69,10 @@ void parse_input()
     time_t time_taken = t_end - t_start;
     DEBUG_PRINT("Completed in %li seconds\n", time_taken);
 
-    if (time_taken > max_time_taken)
+    if (time_taken > state.max_time_taken)
     {
-      max_time_taken = time_taken;
-      slowest_command = c.arr[i];
+      state.max_time_taken = time_taken;
+      state.slowest_command = c.arr[i];
     }
   }
 
@@ -84,7 +84,7 @@ int exec_singular(command c, bool to_fork)
   int status;
   if (strcmp(c.argv[0], "exit") == 0)
   {
-    *EXIT = true;
+    state.EXIT = true;
     status = SUCCESS;
   }
   else if (strcmp(c.argv[0], "warp") == 0)

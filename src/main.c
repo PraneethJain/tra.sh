@@ -1,29 +1,14 @@
 #include "headers.h"
 
-bool *EXIT;
 string input;
-string homepath;
-string lastpath;
-string tilde;
-string delimiters;
-processes procs;
-history h;
-time_t max_time_taken;
-command slowest_command;
-
 trash state;
 
 int init()
 {
   if (init_signals() == FAILURE)
     return FAILURE;
-  EXIT = mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-  *EXIT = false;
-  homepath = new_string(MAX_STR_LEN);
-  if (!homepath.allocated)
-    return FAILURE;
-
-  if (getcwd(homepath.str, homepath.size) == NULL)
+  state.EXIT = false;
+  if (getcwd(state.homepath, MAX_STR_LEN) == NULL)
   {
     DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
     ERROR_PRINT("Could not get current directory\n");
@@ -34,21 +19,11 @@ int init()
   if (!input.allocated)
     return FAILURE;
 
-  lastpath = new_string(MAX_STR_LEN);
-  if (!lastpath.allocated)
-    return FAILURE;
-
-  tilde = new_string(2);
-  if (!tilde.allocated)
-    return FAILURE;
-  strcpy(tilde.str, "~\0");
-
-  delimiters = new_string(128);
-  if (!delimiters.allocated)
-    return FAILURE;
-  strcpy(delimiters.str, " \t\n\v\f\r");
+  state.lastpath[0] = '\0';
+  strcpy(state.tilde, "~\0");
+  strcpy(state.delimiters, " \t\n\v\f\r");
   state.procs.length = 0;
-  max_time_taken = 0;
+  state.max_time_taken = 0;
 
   if (init_history() == FAILURE)
     return FAILURE;
@@ -62,11 +37,6 @@ int init()
 
 void destroy()
 {
-  free(homepath.str);
-  free(lastpath.str);
-  free(tilde.str);
-  free(delimiters.str);
-
   destroy_prompt();
   destroy_history();
   DEBUG_PRINT("Destruction Complete\n");
@@ -76,7 +46,7 @@ int main()
 {
   if (init() == FAILURE)
     return FAILURE;
-  while (!*EXIT)
+  while (!state.EXIT)
   {
     remove_zombie_processes();
     prompt();

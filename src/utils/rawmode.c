@@ -43,8 +43,8 @@ int read_line_raw()
   if (enable_raw_mode() == FAILURE)
     return FAILURE;
 
-  input.length = 0;
-  input.str[0] = '\0';
+  state.input[0] = '\0';
+  state.input_length = 0;
   char c;
   while (read(STDIN_FILENO, &c, 1) == 1)
   {
@@ -59,14 +59,14 @@ int read_line_raw()
       {
         for (int i = 0; i < 8; ++i)
           printf(" ");
-        input.str[input.length++] = c;
+        state.input[state.input_length++] = c;
       }
-      else if (c == 127 && input.length > 0) // backspace
+      else if (c == 127 && state.input_length > 0) // backspace
       {
-        if (input.str[input.length - 1] == 9) // In case of tab, remove whole tab
+        if (state.input[state.input_length - 1] == 9) // In case of tab, remove whole tab
           for (int i = 0; i < 7; i++)
             printf("\b");
-        input.str[--input.length] = '\0';
+        state.input[--state.input_length] = '\0';
         printf("\b \b");
       }
       else if (c == 4) // END OF TRANSMISSION
@@ -76,11 +76,11 @@ int read_line_raw()
     }
     else // normal character
     {
-      input.str[input.length++] = c;
+      state.input[state.input_length++] = c;
       printf("%c", c);
     }
   }
-  input.str[input.length++] = '\0';
+  state.input[state.input_length++] = '\0';
   if (disable_raw_mode() == FAILURE)
     return FAILURE;
 

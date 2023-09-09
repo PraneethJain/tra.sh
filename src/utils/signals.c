@@ -17,5 +17,6 @@ int init_signals()
 
 void SIGINT_handler(int sig)
 {
+  sig += 1;
   DEBUG_PRINT("\nInside SIGINT_handler with sig %i\n", sig);
 }

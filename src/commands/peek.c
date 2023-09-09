@@ -177,7 +177,7 @@ int peek(command c)
   }
 
   if (path.str[0] == '~')
-    replace(&path, tilde, homepath);
+    replace(&path, state.tilde, state.homepath);
 
   struct dirent **entries;
   DEBUG_PRINT("Attempting to scandir %s\n", path.str);

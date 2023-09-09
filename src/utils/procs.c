@@ -59,7 +59,11 @@ int remove_zombie_processes()
     {
       if (waitpid(state.procs.pid[i], &status, WNOHANG | WUNTRACED) != 0)
       {
-        printf("%s exited normally (%i)\n", state.procs.c[i].argv[0], state.procs.pid[i]);
+        if (WIFEXITED(status))
+          printf("%s exited normally (%i)\n", state.procs.c[i].argv[0], state.procs.pid[i]);
+        else
+          printf("%s exited abnormally (%i)\n", state.procs.c[i].argv[0], state.procs.pid[i]);
+
         for (size_t j = i; j < state.procs.length - 1; ++j)
         {
           state.procs.c[j] = state.procs.c[j + 1];

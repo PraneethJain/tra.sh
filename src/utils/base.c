@@ -22,17 +22,17 @@ string new_string(size_t size)
 }
 
 // Replaces the first occurence of a in s by b
-void replace(string *s, string a, string b)
+void replace(string *s, const char *a, const char *b)
 {
-  char *ptr = strstr(s->str, a.str);
+  char *ptr = strstr(s->str, a);
   if (ptr == NULL)
     return;
 
   size_t idx = ptr - s->str;
   string temp = new_string(s->size);
   strncpy(temp.str, s->str, idx);
-  strcat(temp.str, b.str);
-  strcat(temp.str, s->str + idx + strlen(a.str));
+  strcat(temp.str, b);
+  strcat(temp.str, s->str + idx + strlen(a));
   strcpy(s->str, temp.str);
   free(temp.str);
 }

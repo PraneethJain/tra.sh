@@ -107,7 +107,7 @@ int seek(command c)
     {
       strcpy(path.str, c.argv[i]);
       if (path.str[0] == '~')
-        replace(&path, tilde, homepath);
+        replace(&path, state.tilde, state.homepath);
       found_path = true;
     }
     else
