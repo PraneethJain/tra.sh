@@ -38,6 +38,7 @@ void sanitize()
 void parse_input()
 {
   sanitize();
+  bool add_to_history = true;
   commands c;
   c.size = 0;
 
@@ -64,7 +65,8 @@ void parse_input()
   {
     time_t t_start = time(NULL);
     DEBUG_PRINT("%zu. %s with %i arguments\n", i + 1, c.arr[i].argv[0], c.arr[i].argc);
-    exec_command(c.arr[i]);
+    int res = exec_command(c.arr[i]);
+    add_to_history &= res != 2;
     time_t t_end = time(NULL);
     time_t time_taken = t_end - t_start;
     DEBUG_PRINT("Completed in %li seconds\n", time_taken);
@@ -76,10 +78,11 @@ void parse_input()
     }
   }
 
-  add_event(c);
+  if (add_to_history)
+    add_event(c);
 }
 
-int exec_singular(command c, bool to_fork)
+int exec_singular(command c)
 {
   int status;
   if (strcmp(c.argv[0], "exit") == 0)
@@ -119,13 +122,13 @@ int exec_singular(command c, bool to_fork)
   {
     status = fg(c);
   }
-  else if (strcmp(c.argv[0], "fg") == 0)
+  else if (strcmp(c.argv[0], "bg") == 0)
   {
     status = bg(c);
   }
   else
   {
-    status = to_fork ? system_command_with_fork(c) : system_command(c);
+    status = system_command_with_fork(c);
   }
 
   return status;
@@ -143,9 +146,6 @@ int exec_command(command c)
       strcpy(subcommands.arr[num_subcommands].argv[subcommands.arr[num_subcommands].argc++], c.argv[i]);
   ++num_subcommands;
 
-  if (num_subcommands == 1)
-    return exec_singular(c, true);
-
   int saved_stdin = dup(STDIN_FILENO);
   int saved_stdout = dup(STDOUT_FILENO);
 
@@ -153,60 +153,47 @@ int exec_command(command c)
   int prev_pipe = STDIN_FILENO;
   for (int i = 0; i < num_subcommands - 1; ++i)
   {
+    if (strcmp(subcommands.arr[i].argv[0], "pastevents") == 0)
+    {
+      dup2(saved_stdin, STDIN_FILENO);
+      dup2(saved_stdout, STDOUT_FILENO);
+      ERROR_PRINT("Cannot pipe with pastevents!\n");
+      return 2;
+    }
+
     if (pipe(fd) == -1)
     {
       ERROR_PRINT("Failed to create pipe!\n");
       return FAILURE;
     }
-    pid_t pid = fork();
-    if (pid == 0)
-    {
-      if (prev_pipe != STDIN_FILENO)
-      {
-        dup2(prev_pipe, STDIN_FILENO);
-        close(prev_pipe);
-      }
-      dup2(fd[1], STDOUT_FILENO);
-      close(fd[1]);
-
-      exec_singular(subcommands.arr[i], false);
-      exit(1);
-    }
-    else
-    {
-      close(prev_pipe);
-      close(fd[1]);
-      prev_pipe = fd[0];
-    }
-  }
-
-  pid_t pid = fork();
-  if (pid == 0)
-  {
     if (prev_pipe != STDIN_FILENO)
     {
       dup2(prev_pipe, STDIN_FILENO);
       close(prev_pipe);
     }
-    exec_singular(subcommands.arr[num_subcommands - 1], false);
-    exit(1);
+    dup2(fd[1], STDOUT_FILENO);
+    exec_singular(subcommands.arr[i]);
+    close(prev_pipe);
+    close(fd[1]);
+    prev_pipe = fd[0];
   }
-  else
+
+  if (num_subcommands > 1 && strcmp(subcommands.arr[num_subcommands - 1].argv[0], "pastevents") == 0)
   {
-    if (c.is_background)
-    {
-      printf("%i\n", pid);
-      if (insert_process(subcommands.arr[num_subcommands - 1], pid) == FAILURE)
-        return FAILURE;
-    }
-    else
-    {
-      int status;
-      waitpid(pid, &status, 0);
-    }
+    dup2(saved_stdin, STDIN_FILENO);
+    dup2(saved_stdout, STDOUT_FILENO);
+    ERROR_PRINT("Cannot pipe with pastevents!\n");
+    return 2;
+  }
+
+  if (prev_pipe != STDIN_FILENO)
+  {
+    dup2(prev_pipe, STDIN_FILENO);
+    close(prev_pipe);
   }
 
   dup2(saved_stdout, STDOUT_FILENO);
+  exec_singular(subcommands.arr[num_subcommands - 1]);
   dup2(saved_stdin, STDIN_FILENO);
 
   return SUCCESS;
