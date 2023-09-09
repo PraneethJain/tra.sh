@@ -23,6 +23,7 @@ int init()
   strcpy(state->delimiters, " \t\n\v\f\r");
   state->procs.length = 0;
   state->max_time_taken = 0;
+  state->child_running_in_fg = false;
 
   if (init_history() == FAILURE)
     return FAILURE;

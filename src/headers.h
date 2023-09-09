@@ -44,6 +44,7 @@
 typedef struct trash
 {
   bool EXIT;
+  bool child_running_in_fg;
   char input[MAX_STR_LEN];
   size_t input_length;
   char homepath[MAX_STR_LEN];

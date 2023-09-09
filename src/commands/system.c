@@ -45,7 +45,9 @@ int system_command_with_fork(command c)
     else
     {
       int status;
+      state->child_running_in_fg = true;
       waitpid(pid, &status, 0);
+      state->child_running_in_fg = false;
     }
   }
 

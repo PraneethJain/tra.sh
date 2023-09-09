@@ -17,6 +17,12 @@ int init_signals()
 
 void SIGINT_handler(int sig)
 {
-  sig += 1;
   DEBUG_PRINT("\nInside SIGINT_handler with sig %i\n", sig);
+  write(STDOUT_FILENO, "\n", 1);
+  if (!state->child_running_in_fg)
+  {
+    state->input_length = 0;
+    state->input[0] = '\0';
+    prompt();
+  }
 }
