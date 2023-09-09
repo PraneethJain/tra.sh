@@ -4,6 +4,7 @@ string new_string(size_t size)
 {
   string s;
   s.size = size;
+  s.length = 0;
   s.str = (char *)malloc(size * sizeof(char));
   if (s.str == NULL)
   {

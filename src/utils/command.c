@@ -35,16 +35,14 @@ void sanitize(string s)
   }
 }
 
-void parse_input(string input)
+void parse_input()
 {
-  input.str[strcspn(input.str, "\r\n")] = '\0';
   sanitize(input);
   commands c;
   c.size = 0;
 
-  size_t input_length = strlen(input.str);
   size_t cur_command_len;
-  for (size_t cur_ptr = 0; cur_ptr < input_length; cur_ptr += cur_command_len + 1)
+  for (size_t cur_ptr = 0; cur_ptr < input.length; cur_ptr += cur_command_len + 1)
   {
     if ((cur_command_len = strcspn(input.str + cur_ptr, ";&")) > 0)
     {

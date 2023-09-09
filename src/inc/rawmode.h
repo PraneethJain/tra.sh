@@ -4,6 +4,6 @@
 #include "base.h"
 int disable_raw_mode();
 int enable_raw_mode();
-string read_line_raw();
+int read_line_raw();
 
 #endif

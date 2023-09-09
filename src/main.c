@@ -1,6 +1,7 @@
 #include "headers.h"
 
 bool *EXIT;
+string input;
 string homepath;
 string lastpath;
 string tilde;
@@ -26,6 +27,10 @@ int init()
     ERROR_PRINT("Could not get current directory\n");
     return FAILURE;
   }
+
+  input = new_string(MAX_STR_LEN);
+  if (!input.allocated)
+    return FAILURE;
 
   lastpath = new_string(MAX_STR_LEN);
   if (!lastpath.allocated)
@@ -76,9 +81,8 @@ int main()
   {
     remove_processes();
     prompt();
-    string input = read_line_raw();
-    parse_input(input);
-    free(input.str);
+    read_line_raw();
+    parse_input();
   }
   destroy();
 

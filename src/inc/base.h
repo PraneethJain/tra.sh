@@ -14,6 +14,7 @@
 typedef struct string
 {
   char *str;
+  size_t length;
   size_t size;
   bool allocated;
 } string;

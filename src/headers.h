@@ -41,6 +41,7 @@
 #include "inc/warp.h"
 
 extern bool *EXIT;
+extern string input;
 extern string homepath;
 extern string lastpath;
 extern string tilde;
