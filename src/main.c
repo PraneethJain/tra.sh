@@ -12,6 +12,8 @@ command slowest_command;
 
 int init()
 {
+  if (init_signals() == FAILURE)
+    return FAILURE;
   EXIT = mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
   *EXIT = false;
   homepath = new_string(MAX_STR_LEN);

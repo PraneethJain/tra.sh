@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <math.h>
 #include <pwd.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,8 +21,8 @@
 #include <unistd.h>
 
 #include "inc/activities.h"
-#include "inc/bg.h"
 #include "inc/base.h"
+#include "inc/bg.h"
 #include "inc/colors.h"
 #include "inc/command.h"
 #include "inc/fg.h"
@@ -31,8 +32,8 @@
 #include "inc/proclore.h"
 #include "inc/procs.h"
 #include "inc/prompt.h"
-#include "inc/signals.h"
 #include "inc/seek.h"
+#include "inc/signals.h"
 #include "inc/system.h"
 #include "inc/warp.h"
 
