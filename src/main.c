@@ -1,6 +1,5 @@
 #include "headers.h"
 
-string input;
 trash state;
 
 int init()
@@ -15,10 +14,7 @@ int init()
     return FAILURE;
   }
 
-  input = new_string(MAX_STR_LEN);
-  if (!input.allocated)
-    return FAILURE;
-
+  state.input[0] = '\0';
   state.lastpath[0] = '\0';
   strcpy(state.tilde, "~\0");
   strcpy(state.delimiters, " \t\n\v\f\r");
