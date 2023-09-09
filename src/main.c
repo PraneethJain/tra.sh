@@ -6,10 +6,12 @@ string homepath;
 string lastpath;
 string tilde;
 string delimiters;
-process_list p;
+processes procs;
 history h;
 time_t max_time_taken;
 command slowest_command;
+
+trash state;
 
 int init()
 {
@@ -45,9 +47,7 @@ int init()
   if (!delimiters.allocated)
     return FAILURE;
   strcpy(delimiters.str, " \t\n\v\f\r");
-  p = init_process_list();
-  if (p == NULL)
-    return FAILURE;
+  state.procs.length = 0;
   max_time_taken = 0;
 
   if (init_history() == FAILURE)
@@ -66,7 +66,6 @@ void destroy()
   free(lastpath.str);
   free(tilde.str);
   free(delimiters.str);
-  free_process_list();
 
   destroy_prompt();
   destroy_history();

@@ -1,31 +1,14 @@
 #include "../headers.h"
 
-process_list init_process_list()
-{
-  process_list p = (process_list)malloc(sizeof(process_list_st));
-  if (p == NULL)
-  {
-    DEBUG_PRINT("malloc failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Ran out of memory!");
-  }
-  // Dummy node
-  p->pid = -1;
-  p->next = NULL;
-
-  return p;
-}
-
 void print_process_list()
 {
-  merge_sort(&p);
-  process_list cur = p->next;
-  while (cur != NULL)
+  for (size_t i = 0; i < state.procs.length; ++i)
   {
-    printf("%i : ", cur->pid);
-    print_command(&cur->c);
+    printf("%i : ", state.procs.pid[i]);
+    print_command(&state.procs.c[i]);
     printf(" - ");
     int status;
-    if (waitpid(cur->pid, &status, WNOHANG) == 0)
+    if (waitpid(state.procs.pid[i], &status, WNOHANG) == 0)
     {
       printf("Running");
     }
@@ -34,47 +17,35 @@ void print_process_list()
       printf("Stopped");
     }
     printf("\n");
-    cur = cur->next;
   }
 }
 
 int insert_process(command c, pid_t pid)
 {
-  process_list new = (process_list)malloc(sizeof(process_list_st));
-  if (new == NULL)
+  bool inserted = false;
+  for (size_t i = 0; i < state.procs.length; ++i)
   {
-    DEBUG_PRINT("malloc failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Ran out of memory!");
-    return FAILURE;
-  }
-  new->c = c;
-  new->pid = pid;
-  new->next = p->next;
-  p->next = new;
-
-  return SUCCESS;
-}
-
-int remove_process(pid_t pid)
-{
-  process_list cur = p->next;
-  process_list prev = p;
-
-  while (cur != NULL)
-  {
-    process_list next = cur->next;
-    if (cur->pid == pid)
+    if (state.procs.pid[i] > pid)
     {
-      printf("%s exited normally (%i)\n", cur->c.argv[0], cur->pid);
-      free(cur);
-      prev->next = next;
-      return SUCCESS;
+      for (size_t j = state.procs.length; j > i; --j)
+      {
+        state.procs.c[j] = state.procs.c[j - 1];
+        state.procs.pid[j] = state.procs.pid[j - 1];
+      }
+      state.procs.c[i] = c;
+      state.procs.pid[i] = pid;
+      inserted = true;
     }
-    prev = prev->next;
-    cur = next;
   }
 
-  return FAILURE;
+  if (!inserted)
+  {
+    state.procs.c[state.procs.length] = c;
+    state.procs.pid[state.procs.length] = pid;
+  }
+
+  ++state.procs.length;
+  return SUCCESS;
 }
 
 int remove_processes()
@@ -84,32 +55,22 @@ int remove_processes()
   {
     int status;
     done = true;
-    for (process_list cur = p->next; cur != NULL; cur = cur->next)
+    for (size_t i = 0; i < state.procs.length; ++i)
     {
-      if (waitpid(cur->pid, &status, WNOHANG | WUNTRACED) != 0)
+      if (waitpid(state.procs.pid[i], &status, WNOHANG | WUNTRACED) != 0)
       {
-        if (remove_process(cur->pid) == FAILURE)
-          return FAILURE;
-        else
+        printf("%s exited normally (%i)\n", state.procs.c[i].argv[0], state.procs.pid[i]);
+        for (size_t j = i; j < state.procs.length - 1; ++j)
         {
-          done = false;
-          break;
+          state.procs.c[j] = state.procs.c[j + 1];
+          state.procs.pid[j] = state.procs.pid[j + 1];
         }
+        --state.procs.length;
+        done = false;
+        break;
       }
     }
   }
 
   return SUCCESS;
-}
-
-void free_process_list()
-{
-  process_list cur = p->next;
-  while (cur != NULL)
-  {
-    process_list temp = cur->next;
-    free(cur);
-    cur = temp;
-  }
-  free(p);
 }

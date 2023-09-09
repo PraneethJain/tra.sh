@@ -40,15 +40,22 @@
 #include "inc/system.h"
 #include "inc/warp.h"
 
-extern bool *EXIT;
-extern string input;
-extern string homepath;
-extern string lastpath;
-extern string tilde;
-extern string delimiters;
-extern process_list p;
-extern history h;
-extern time_t max_time_taken;
-extern command slowest_command;
+typedef struct trash
+{
+  bool EXIT;
+  char input[MAX_STR_LEN];
+  char homepath[MAX_STR_LEN];
+  char lastpath[MAX_STR_LEN];
+  char tilde[2];
+  char delimiters[128];
+  processes procs;
+  history h;
+  time_t max_time_taken;
+  command slowest_command;
+
+} trash;
+
+extern trash state;
+
 
 #endif
