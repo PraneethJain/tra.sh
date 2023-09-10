@@ -51,7 +51,8 @@ int main()
   {
     remove_zombie_processes();
     prompt();
-    read_line_raw();
+    if (read_line_raw() == 2)
+      break;
     parse_input();
   }
   destroy();

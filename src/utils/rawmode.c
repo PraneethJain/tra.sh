@@ -69,9 +69,10 @@ int read_line_raw()
         state->input[--state->input_length] = '\0';
         printf("\b \b");
       }
-      else if (c == 4) // END OF TRANSMISSION
+      else if (c == 4) // END OF TRANSMISSION (Ctrl + D)
       {
-        exit(0);
+        state->EXIT = true;
+        return 2;
       }
     }
     else // normal character
