@@ -22,8 +22,24 @@ int fg(command c)
     return FAILURE;
   }
 
+  if (kill(pid, SIGCONT) != 0)
+  {
+    DEBUG_PRINT("kill failed with errno %i (%s)\n", errno, strerror(errno));
+    ERROR_PRINT("Failed to bring process to foreground\n");
+    return FAILURE;
+  }
+
+  setpgid(pid, 0);
+  signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+  tcsetpgrp(STDIN_FILENO, pid);
+
   int status;
   waitpid(pid, &status, 0);
+
+  tcsetpgrp(STDIN_FILENO, getpgid(0));
+  signal(SIGTTIN, SIG_DFL);
+  signal(SIGTTOU, SIG_DFL);
 
   return SUCCESS;
 }

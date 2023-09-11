@@ -1,22 +1,5 @@
 #include "../headers.h"
 
-int system_command(command c)
-{
-  char *argv[c.argc + 1];
-  for (int i = 0; i < c.argc; ++i)
-    argv[i] = c.argv[i];
-  argv[c.argc] = NULL;
-
-  if (execvp(c.argv[0], argv) == -1)
-  {
-    DEBUG_PRINT("execvp failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Couldn't execute %s\n", c.argv[0]);
-    exit(1);
-  }
-
-  return SUCCESS;
-}
-
 int system_command_with_fork(command c)
 {
   pid_t pid = fork();
@@ -27,6 +10,8 @@ int system_command_with_fork(command c)
       argv[i] = c.argv[i];
     argv[c.argc] = NULL;
 
+    signal(SIGINT, SIG_DFL);
+    signal(SIGTSTP, SIG_DFL);
     if (execvp(c.argv[0], argv) == -1)
     {
       DEBUG_PRINT("execvp failed with errno %i (%s)\n", errno, strerror(errno));
@@ -44,10 +29,24 @@ int system_command_with_fork(command c)
     }
     else
     {
+      setpgid(pid, 0);
+      signal(SIGTTIN, SIG_IGN);
+      signal(SIGTTOU, SIG_IGN);
+      tcsetpgrp(STDIN_FILENO, pid);
+
       int status;
       state->child_running_in_fg = true;
-      waitpid(pid, &status, 0);
+      waitpid(pid, &status, WUNTRACED);
       state->child_running_in_fg = false;
+
+      if (WIFSTOPPED(status)) // Ctrl+Z pressed
+      {
+        insert_process(c, pid);
+      }
+
+      tcsetpgrp(STDIN_FILENO, getpgid(0));
+      signal(SIGTTIN, SIG_DFL);
+      signal(SIGTTOU, SIG_DFL);
     }
   }
 

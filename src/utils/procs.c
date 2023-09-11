@@ -7,15 +7,21 @@ void print_processes()
     printf("%i : ", state->procs.pid[i]);
     print_command(&state->procs.c[i]);
     printf(" - ");
-    int status;
-    if (waitpid(state->procs.pid[i], &status, WNOHANG) == 0)
+    char status = '?';
+    string process_path = new_string(MAX_STR_LEN);
+    snprintf(process_path.str, process_path.size, "/proc/%i/stat", state->procs.pid[i]);
+    FILE *process_file = fopen(process_path.str, "r");
+    free(process_path.str);
+    if (process_file != NULL)
     {
-      printf("Running");
+      char buf[MAX_STR_LEN];
+      fscanf(process_file, "%s %[^)]%c %c", buf, buf, &buf[0], &status);
     }
-    else
-    {
+
+    if (status == 'Z' || status == 'T')
       printf("Stopped");
-    }
+    else
+      printf("Running");
     printf("\n");
   }
 }
