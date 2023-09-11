@@ -215,11 +215,6 @@ int exec_command(command c)
           ERROR_PRINT("No output file provided!\n");
           return FAILURE;
         }
-        if (i + 2 != c.argc)
-        {
-          ERROR_PRINT("Output redirection has to be last pipe operation!\n");
-          return FAILURE;
-        }
         subcommands.arr[num_subcommands].outfile = open(c.argv[i + 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
         if (subcommands.arr[num_subcommands].outfile == -1)
         {
