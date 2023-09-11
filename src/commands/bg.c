@@ -22,5 +22,12 @@ int bg(command c)
     return FAILURE;
   }
 
+  if (kill(pid, SIGCONT) != 0)
+  {
+    DEBUG_PRINT("kill failed with errno %i (%s)\n", errno, strerror(errno));
+    ERROR_PRINT("Failed to bring process to foreground\n");
+    return FAILURE;
+  }
+
   return SUCCESS;
 }
