@@ -126,6 +126,10 @@ int exec_singular(command c)
   {
     status = bg(c);
   }
+  else if (strcmp(c.argv[0], "neonate") == 0)
+  {
+    status = neonate(c);
+  }
   else
   {
     status = system_command_with_fork(c);
