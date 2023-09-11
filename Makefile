@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = 
 
 SRCS = src/main.c src/commands/activities.c src/commands/bg.c src/commands/fg.c src/commands/neonate.c src/commands/pastevents.c src/commands/peek.c src/commands/ping.c src/commands/proclore.c src/commands/seek.c src/commands/system.c src/commands/warp.c src/utils/base.c src/utils/command.c src/utils/signals.c src/utils/procs.c src/utils/prompt.c src/utils/rawmode.c 
 OBJS = $(SRCS:.c=.o)
@@ -8,7 +8,7 @@ EXE = trash
 DBGDIR = debug
 DBGEXE = $(DBGDIR)/$(EXE)
 DBGOBJS = $(addprefix $(DBGDIR)/, $(OBJS))
-DBGCFLAGS = -g -O0 -fsanitize=address,undefined -D DEBUG
+DBGCFLAGS = -Wall -Wextra -Werror -g -O0 -fsanitize=address,undefined -D DEBUG
 
 RELDIR = release
 RELEXE = $(RELDIR)/$(EXE)
