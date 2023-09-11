@@ -1,5 +1,22 @@
 #include "../headers.h"
 
+int exec_in_fg(pid_t pid)
+{
+  setpgid(pid, 0);
+  signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+  tcsetpgrp(STDIN_FILENO, pid);
+
+  int status;
+  waitpid(pid, &status, WUNTRACED);
+
+  tcsetpgrp(STDIN_FILENO, getpgid(0));
+  signal(SIGTTIN, SIG_DFL);
+  signal(SIGTTOU, SIG_DFL);
+
+  return status;
+}
+
 int fg(command c)
 {
   if (c.argc != 2)
@@ -29,17 +46,7 @@ int fg(command c)
     return FAILURE;
   }
 
-  setpgid(pid, 0);
-  signal(SIGTTIN, SIG_IGN);
-  signal(SIGTTOU, SIG_IGN);
-  tcsetpgrp(STDIN_FILENO, pid);
-
-  int status;
-  waitpid(pid, &status, WUNTRACED);
-
-  tcsetpgrp(STDIN_FILENO, getpgid(0));
-  signal(SIGTTIN, SIG_DFL);
-  signal(SIGTTOU, SIG_DFL);
+  exec_in_fg(pid);
 
   return SUCCESS;
 }

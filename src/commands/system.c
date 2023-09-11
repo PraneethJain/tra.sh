@@ -30,24 +30,10 @@ int system_command(command c)
     }
     else
     {
-      setpgid(pid, 0);
-      signal(SIGTTIN, SIG_IGN);
-      signal(SIGTTOU, SIG_IGN);
-      tcsetpgrp(STDIN_FILENO, pid);
-
-      int status;
-      state->child_running_in_fg = true;
-      waitpid(pid, &status, WUNTRACED);
-      state->child_running_in_fg = false;
-
-      tcsetpgrp(STDIN_FILENO, getpgid(0));
-      signal(SIGTTIN, SIG_DFL);
-      signal(SIGTTOU, SIG_DFL);
+      int status = exec_in_fg(pid);
 
       if (WIFSTOPPED(status)) // Ctrl+Z pressed
-      {
         insert_process(c, pid);
-      }
     }
   }
 

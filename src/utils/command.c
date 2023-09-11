@@ -245,7 +245,11 @@ int exec_command(command c)
   {
     if (pipe(fd) == -1)
     {
-      ERROR_PRINT("Failed to create pipe!\n");
+      dup2(saved_stdin, STDIN_FILENO);
+      dup2(saved_stdout, STDOUT_FILENO);
+
+      close(saved_stdin);
+      close(saved_stdout);
       return FAILURE;
     }
 
@@ -253,6 +257,9 @@ int exec_command(command c)
     {
       dup2(saved_stdin, STDIN_FILENO);
       dup2(saved_stdout, STDOUT_FILENO);
+
+      close(saved_stdin);
+      close(saved_stdout);
       ERROR_PRINT("Cannot pipe with pastevents!\n");
       return 2;
     }
@@ -272,7 +279,16 @@ int exec_command(command c)
       close(subcommands.arr[i].outfile);
     }
 
-    exec_singular(subcommands.arr[i]);
+    if (exec_singular(subcommands.arr[i]) == FAILURE)
+    {
+      DEBUG_PRINT("Failed to execute %s\n", subcommands.arr[i].argv[0]);
+      dup2(saved_stdin, STDIN_FILENO);
+      dup2(saved_stdout, STDOUT_FILENO);
+
+      close(saved_stdin);
+      close(saved_stdout);
+      return FAILURE;
+    }
     close(fd[1]);
     prev_pipe = fd[0]; // fd[0] is output of current, which will be input of next
   }

@@ -4,36 +4,20 @@ struct termios orig_termios;
 
 int enable_raw_mode()
 {
-  if (tcgetattr(STDIN_FILENO, &orig_termios) == -1)
-  {
-    DEBUG_PRINT("tcgetattr failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Failed to enable raw mode\n");
-    return FAILURE;
-  }
+  tcgetattr(STDIN_FILENO, &orig_termios);
 
   atexit((void *)disable_raw_mode);
   struct termios raw = orig_termios;
   raw.c_lflag &= ~(ICANON | ECHO);
 
-  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
-  {
-    DEBUG_PRINT("tcsetattr failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Failed to enable raw mode\n");
-    return FAILURE;
-  }
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 
   return SUCCESS;
 }
 
 int disable_raw_mode()
 {
-  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1)
-  {
-    DEBUG_PRINT("tcsetattr failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Failed to disable raw mode\n");
-    return FAILURE;
-  }
-
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
   return SUCCESS;
 }
 
