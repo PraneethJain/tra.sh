@@ -53,7 +53,9 @@ int main()
     prompt();
     if (read_line_raw() == 2)
       break;
+    state->child_running_in_fg = true;
     parse_input();
+    state->child_running_in_fg = false;
   }
   destroy();
 
