@@ -4,8 +4,7 @@ int init_signals()
 {
   if (init_signal(SIGINT, SIGINT_handler) == FAILURE)
     return FAILURE;
-  if (init_signal(SIGTSTP, SIGTSTP_handler) == FAILURE)
-    return FAILURE;
+  signal(SIGTSTP, SIG_IGN);
   return SUCCESS;
 }
 
@@ -34,9 +33,4 @@ void SIGINT_handler(int sig)
     state->input[0] = '\0';
     prompt();
   }
-}
-
-void SIGTSTP_handler(int sig)
-{
-  DEBUG_PRINT("\nInside SIGTSTP_handler with sig %i\n", sig);
 }

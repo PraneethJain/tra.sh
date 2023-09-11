@@ -10,6 +10,7 @@ int system_command(command c)
       argv[i] = c.argv[i];
     argv[c.argc] = NULL;
 
+    setpgid(0, 0);
     signal(SIGINT, SIG_DFL);
     signal(SIGTSTP, SIG_DFL);
     if (execvp(c.argv[0], argv) == -1)
@@ -39,14 +40,14 @@ int system_command(command c)
       waitpid(pid, &status, WUNTRACED);
       state->child_running_in_fg = false;
 
+      tcsetpgrp(STDIN_FILENO, getpgid(0));
+      signal(SIGTTIN, SIG_DFL);
+      signal(SIGTTOU, SIG_DFL);
+
       if (WIFSTOPPED(status)) // Ctrl+Z pressed
       {
         insert_process(c, pid);
       }
-
-      tcsetpgrp(STDIN_FILENO, getpgid(0));
-      signal(SIGTTIN, SIG_DFL);
-      signal(SIGTTOU, SIG_DFL);
     }
   }
 

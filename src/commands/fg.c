@@ -35,7 +35,7 @@ int fg(command c)
   tcsetpgrp(STDIN_FILENO, pid);
 
   int status;
-  waitpid(pid, &status, 0);
+  waitpid(pid, &status, WUNTRACED);
 
   tcsetpgrp(STDIN_FILENO, getpgid(0));
   signal(SIGTTIN, SIG_DFL);
