@@ -1,6 +1,6 @@
 #include "../headers.h"
 
-int system_command_with_fork(command c)
+int system_command(command c)
 {
   pid_t pid = fork();
   if (pid == 0)

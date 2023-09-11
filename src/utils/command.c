@@ -132,7 +132,7 @@ int exec_singular(command c)
   }
   else
   {
-    status = system_command_with_fork(c);
+    status = system_command(c);
   }
 
   return status;
@@ -193,11 +193,6 @@ int exec_command(command c)
         if (i + 1 >= c.argc)
         {
           ERROR_PRINT("No output file provided!\n");
-          return FAILURE;
-        }
-        if (i + 2 != c.argc)
-        {
-          ERROR_PRINT("Output redirection has to be last pipe operation!\n");
           return FAILURE;
         }
         subcommands.arr[num_subcommands].outfile = open(c.argv[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
