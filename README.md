@@ -1,7 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/76mHqLr5)
 # trash
 
-A shell written in c.
+A shell written in c with **0 malloc calls**.
 
 # Requirements
 - `make`
@@ -10,7 +10,9 @@ A shell written in c.
 # Installation Instructions
 1. Clone the repo.
 2. `cd` into it.
-3. Run `make`.
+3. Run `make`. The binary will be built. Run with `./a.out`.
+(or)
+3. Run `make release`.
 4. The binary will be built. 
 5. Run with `./release/trash`.
 

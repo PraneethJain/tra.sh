@@ -15,6 +15,9 @@ RELEXE = $(RELDIR)/$(EXE)
 RELOBJS = $(addprefix $(RELDIR)/, $(OBJS))
 RELCFLAGS = -O3
 
+because_ta_wants_a.out: prep release
+	mv ./release/trash a.out
+
 all: prep release
 
 debug: $(DBGEXE)
@@ -42,5 +45,5 @@ prep:
 remake: clean all
 
 clean:
-	rm -f $(RELEXE) $(RELOBJS) $(DBGEXE) $(DBGOBJS)
+	rm -f $(RELEXE) $(RELOBJS) $(DBGEXE) $(DBGOBJS) a.out
 
