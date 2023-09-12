@@ -29,6 +29,7 @@
 #include "inc/colors.h"
 #include "inc/command.h"
 #include "inc/fg.h"
+#include "inc/iman.h"
 #include "inc/neonate.h"
 #include "inc/pastevents.h"
 #include "inc/peek.h"

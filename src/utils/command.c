@@ -130,6 +130,10 @@ int exec_singular(command c)
   {
     status = neonate(c);
   }
+  else if (strcmp(c.argv[0], "iman") == 0)
+  {
+    status = iman(c);
+  }
   else
   {
     status = system_command(c);
