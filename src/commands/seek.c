@@ -128,7 +128,11 @@ int seek(command c)
   path_length += path[path_length - 1] != '/';
   find(path);
 
-  if (flag_e && count == 1)
+  if (status == found_none)
+  {
+    printf("No match found!\n");
+  }
+  else if (flag_e && count == 1)
   {
     if (status == found_dir)
     {
