@@ -50,3 +50,9 @@ A shell written in c with **0 malloc calls**.
 ### Seek
 - `-e` flag is only valid when only a singular file/directory is found.
 - The command willl look for all files/directories that contain the given argument.
+
+### Piping
+- Piping from a `pastevents execute <idx>` is supported, but piping into a `pastevents execute <idx>` is not, due to ambiguous behaviour.
+- A command can have at most one input file.
+- A command can have at most one output file.
+- In case a command is receiving input both from a pipe and an input file, the input file will be prioritized over the pipe (as is done in bash).
