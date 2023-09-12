@@ -21,6 +21,18 @@ string new_string(size_t size)
   return s;
 }
 
+void fix_tilde(char *a)
+{
+  char b[MAX_STR_LEN];
+  b[0] = '\0';
+  if (a[0] == '~')
+  {
+    strcpy(b, state->homepath);
+    strcat(b, a + 1);
+    strcpy(a, b);
+  }
+}
+
 // Replaces the first occurence of a in s by b
 void replace(string *s, const char *a, const char *b)
 {
