@@ -26,7 +26,7 @@ int warp(command c)
 
   for (int i = 1; i < c.argc; ++i)
   {
-    fix_tilde(c.argv[i]);
+    tilde_to_homepath(c.argv[i]);
     GETCWD;
     if (strcmp(c.argv[i], "-") == 0)
     {

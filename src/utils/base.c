@@ -21,15 +21,27 @@ string new_string(size_t size)
   return s;
 }
 
-void fix_tilde(char *a)
+void tilde_to_homepath(char *s)
 {
-  char b[MAX_STR_LEN];
-  b[0] = '\0';
-  if (a[0] == '~')
+  char temp[MAX_STR_LEN];
+  temp[0] = '\0';
+  if (s[0] == '~')
   {
-    strcpy(b, state->homepath);
-    strcat(b, a + 1);
-    strcpy(a, b);
+    strcpy(temp, state->homepath);
+    strcat(temp, s + 1);
+    strcpy(s, temp);
+  }
+}
+
+void homepath_to_tilde(char *s)
+{
+  if (strstr(s, state->homepath) == s)
+  {
+    size_t s_len = strlen(s);
+    size_t homepath_len = strlen(state->homepath);
+    for (size_t i = 1; i <= s_len - homepath_len + 1; ++i)
+      s[i] = s[i + homepath_len - 1];
+    s[0] = '~';
   }
 }
 

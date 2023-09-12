@@ -43,7 +43,8 @@ typedef struct processes
 } processes;
 
 string new_string(size_t size);
-void fix_tilde(char *a);
+void tilde_to_homepath(char *s);
+void homepath_to_tilde(char *s);
 void replace(string *s, const char *a, const char *b);
 
 void print_command(command *c);

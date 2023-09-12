@@ -139,11 +139,9 @@ int peek(command c)
   }
 
   if (!found_path)
-  {
     strcpy(path, ".");
-  }
 
-  fix_tilde(path);
+  tilde_to_homepath(path);
 
   struct dirent **entries;
   DEBUG_PRINT("Attempting to scandir %s\n", path);

@@ -4,7 +4,6 @@ char username[MAX_STR_LEN];
 char hostname[MAX_STR_LEN];
 char cwd[MAX_STR_LEN];
 
-
 int prompt()
 {
   if (getlogin_r(username, MAX_STR_LEN) != 0)
@@ -28,14 +27,7 @@ int prompt()
     return FAILURE;
   }
 
-  if (strstr(cwd, state->homepath) == cwd) // If cwd starts with homepath then replace it with tilde
-  {
-    size_t cwd_len = strlen(cwd);
-    size_t homepath_len = strlen(state->homepath);
-    for (size_t i = 1; i <= cwd_len - homepath_len + 1; ++i)
-      cwd[i] = cwd[i + homepath_len - 1];
-    cwd[0] = '~';
-  }
+  homepath_to_tilde(cwd);
 
   if (state->max_time_taken >= 2)
   {

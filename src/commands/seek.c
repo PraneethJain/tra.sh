@@ -3,8 +3,8 @@
 bool flag_d;
 bool flag_f;
 bool flag_e;
-string name;
-string last_found_path;
+char name[MAX_STR_LEN] = {0};
+char last_found_path[MAX_STR_LEN] = {0};
 int count;
 size_t path_length;
 
@@ -17,16 +17,15 @@ typedef enum Status
 
 Status status;
 
-void find(string path)
+void find(char *path)
 {
-  if (path.str[strlen(path.str) - 1] != '/')
-  {
-    strcat(path.str, "/");
-  }
-  DIR *dir = opendir(path.str);
+  if (path[strlen(path) - 1] != '/')
+    strcat(path, "/");
+
+  DIR *dir = opendir(path);
   if (dir == NULL)
   {
-    ERROR_PRINT("No directory %s while seeking\n", path.str);
+    ERROR_PRINT("No directory %s while seeking\n", path);
     return;
   }
 
@@ -41,37 +40,33 @@ void find(string path)
 
     if (entry->d_type == DT_DIR)
     {
-      string next_path = new_string(MAX_STR_LEN);
-      snprintf(next_path.str, next_path.size, "%s%s", path.str, entry->d_name);
-      if ((flag_d || (!flag_d && !flag_f)) && strstr(entry->d_name, name.str) != NULL)
+      char next_path[MAX_STR_LEN];
+      snprintf(next_path, MAX_STR_LEN, "%s%s", path, entry->d_name);
+      if ((flag_d || (!flag_d && !flag_f)) && strstr(entry->d_name, name) != NULL)
       {
         ++count;
         status = found_dir;
-        strcpy(last_found_path.str, next_path.str);
-        printf(C_BLUE "%s\n" C_RESET, next_path.str + path_length);
+        strcpy(last_found_path, next_path);
+        printf(C_BLUE "%s\n" C_RESET, next_path + path_length);
       }
       find(next_path);
-      free(next_path.str);
     }
     else
     {
-      string next_name = new_string(MAX_STR_LEN);
-      snprintf(next_name.str, next_name.size, "%s%s", path.str, entry->d_name);
-      if ((flag_f || (!flag_d && !flag_f)) && strstr(entry->d_name, name.str) != NULL)
+      char next_name[MAX_STR_LEN];
+      snprintf(next_name, MAX_STR_LEN, "%s%s", path, entry->d_name);
+      if ((flag_f || (!flag_d && !flag_f)) && strstr(entry->d_name, name) != NULL)
       {
         ++count;
         status = found_file;
-        strcpy(last_found_path.str, next_name.str);
-        printf(C_GREEN "%s\n" C_RESET, next_name.str + path_length);
+        strcpy(last_found_path, next_name);
+        printf(C_GREEN "%s\n" C_RESET, next_name + path_length);
       }
-      free(next_name.str);
     }
   }
 
   if (closedir(dir))
-  {
-    ERROR_PRINT("Couldn't close %s while seeking\n", path.str);
-  }
+    ERROR_PRINT("Couldn't close %s while seeking\n", path);
 }
 
 int seek(command c)
@@ -79,9 +74,7 @@ int seek(command c)
   flag_d = false;
   flag_f = false;
   flag_e = false;
-  name = new_string(MAX_STR_LEN);
-  last_found_path = new_string(MAX_STR_LEN);
-  string path = new_string(MAX_STR_LEN);
+  char path[MAX_STR_LEN];
   status = found_none;
   count = 0;
   bool found_name = false;
@@ -100,22 +93,18 @@ int seek(command c)
     }
     else if (!found_name)
     {
-      strcpy(name.str, c.argv[i]);
+      strcpy(name, c.argv[i]);
       found_name = true;
     }
     else if (!found_path)
     {
-      strcpy(path.str, c.argv[i]);
-      if (path.str[0] == '~')
-        replace(&path, state->tilde, state->homepath);
+      strcpy(path, c.argv[i]);
+      tilde_to_homepath(path);
       found_path = true;
     }
     else
     {
       ERROR_PRINT("Invalid arguments for seek\n");
-      free(path.str);
-      free(last_found_path.str);
-      free(name.str);
       return FAILURE;
     }
   }
@@ -123,52 +112,38 @@ int seek(command c)
   if (flag_d && flag_f)
   {
     ERROR_PRINT("Invalid flags!\n");
-    free(path.str);
-    free(last_found_path.str);
-    free(name.str);
     return FAILURE;
   }
 
   if (!found_name)
   {
     ERROR_PRINT("No file/directory to search for in seek\n");
-    free(path.str);
-    free(last_found_path.str);
-    free(name.str);
     return FAILURE;
   }
 
   if (!found_path)
-  {
-    strcpy(path.str, ".");
-  }
+    strcpy(path, ".");
 
-  path_length = strlen(path.str);
-  path_length += path.str[path_length - 1] != '/';
+  path_length = strlen(path);
+  path_length += path[path_length - 1] != '/';
   find(path);
 
   if (flag_e && count == 1)
   {
     if (status == found_dir)
     {
-      if (chdir(last_found_path.str) != 0)
+      if (chdir(last_found_path) != 0)
       {
         ERROR_PRINT("Missing permissions for -e in seek\n");
-        free(path.str);
-        free(last_found_path.str);
-        free(name.str);
         return FAILURE;
       }
     }
     else if (status == found_file)
     {
-      FILE *f = fopen(last_found_path.str, "r");
+      FILE *f = fopen(last_found_path, "r");
       if (f == NULL)
       {
         ERROR_PRINT("Missing permissions for -e in seek\n");
-        free(path.str);
-        free(last_found_path.str);
-        free(name.str);
         return FAILURE;
       }
       else
@@ -177,11 +152,9 @@ int seek(command c)
         while ((c = fgetc(f)) != EOF)
           printf("%c", c);
       }
+      fclose(f);
     }
   }
-  free(path.str);
-  free(last_found_path.str);
-  free(name.str);
 
   return SUCCESS;
 }
