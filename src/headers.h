@@ -53,7 +53,6 @@ typedef struct trash
   size_t input_length;
   char homepath[MAX_STR_LEN];
   char lastpath[MAX_STR_LEN];
-  char tilde[2];
   char delimiters[128];
   processes procs;
   history h;

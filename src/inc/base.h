@@ -12,14 +12,6 @@
 #define SUCCESS 0
 #define FAILURE 1
 
-typedef struct string
-{
-  char *str;
-  size_t length;
-  size_t size;
-  bool allocated;
-} string;
-
 typedef struct command
 {
   int argc;
@@ -42,10 +34,8 @@ typedef struct processes
   size_t length;
 } processes;
 
-string new_string(size_t size);
 void tilde_to_homepath(char *s);
 void homepath_to_tilde(char *s);
-void replace(string *s, const char *a, const char *b);
 
 void print_command(command *c);
 void print_commands(commands *cs);

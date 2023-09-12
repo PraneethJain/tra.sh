@@ -9,6 +9,13 @@ int init()
 
   if (init_signals() == FAILURE)
     return FAILURE;
+
+  state->input[0] = '\0';
+  state->lastpath[0] = '\0';
+  strcpy(state->delimiters, " \t\n\v\f\r");
+  state->procs.length = 0;
+  state->max_time_taken = 0;
+  state->child_running_in_fg = false;
   state->EXIT = false;
   if (getcwd(state->homepath, MAX_STR_LEN) == NULL)
   {
@@ -16,14 +23,6 @@ int init()
     ERROR_PRINT("Could not get current directory\n");
     return FAILURE;
   }
-
-  state->input[0] = '\0';
-  state->lastpath[0] = '\0';
-  strcpy(state->tilde, "~\0");
-  strcpy(state->delimiters, " \t\n\v\f\r");
-  state->procs.length = 0;
-  state->max_time_taken = 0;
-  state->child_running_in_fg = false;
 
   if (init_history() == FAILURE)
     return FAILURE;
