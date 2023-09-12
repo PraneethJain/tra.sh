@@ -1,6 +1,7 @@
 #ifndef HEADERS_H_
 #define HEADERS_H_
 
+#include <arpa/inet.h>
 #include <assert.h>
 #include <ctype.h>
 #include <dirent.h>
@@ -9,6 +10,7 @@
 #include <grp.h>
 #include <limits.h>
 #include <math.h>
+#include <netdb.h>
 #include <pwd.h>
 #include <signal.h>
 #include <stdbool.h>
