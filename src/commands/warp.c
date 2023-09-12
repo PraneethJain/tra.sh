@@ -1,89 +1,53 @@
 #include "../headers.h"
 
+#define GETCWD                                                                                                         \
+  if (getcwd(cwd, MAX_STR_LEN) == NULL)                                                                                \
+  {                                                                                                                    \
+    DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));                                         \
+    ERROR_PRINT("Could not get current directory\n");                                                                  \
+    return FAILURE;                                                                                                    \
+  }
+
+#define CHDIR(path)                                                                                                    \
+  if (chdir(path) == -1)                                                                                               \
+  {                                                                                                                    \
+    DEBUG_PRINT("chdir failed with errno %i (%s)\n", errno, strerror(errno));                                          \
+    ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);                                                                     \
+    return FAILURE;                                                                                                    \
+  }                                                                                                                    \
+  strcpy(state->lastpath, cwd);
+
 int warp(command c)
 {
-  string cwd = new_string(MAX_STR_LEN);
+  char cwd[MAX_STR_LEN];
 
   if (c.argc == 1)
-  {
-    if (getcwd(cwd.str, cwd.size) == NULL)
-    {
-      DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
-      ERROR_PRINT("Could not get current directory\n");
-      return FAILURE;
-    }
-    chdir(state->homepath);
-    strcpy(state->lastpath, cwd.str);
-    if (getcwd(cwd.str, cwd.size) == NULL)
-    {
-      DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
-      ERROR_PRINT("Could not get current directory\n");
-      return FAILURE;
-    }
-    printf("%s\n", cwd.str);
-  }
-  else
-  {
+    strcpy(c.argv[c.argc++], "~");
 
-    for (int i = 1; i < c.argc; ++i)
+  for (int i = 1; i < c.argc; ++i)
+  {
+    fix_tilde(c.argv[i]);
+    GETCWD;
+    if (strcmp(c.argv[i], "-") == 0)
     {
-      if (getcwd(cwd.str, cwd.size) == NULL)
+      if (state->lastpath[0] != '\0')
       {
-        DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
-        ERROR_PRINT("Could not get current directory\n");
-        return FAILURE;
-      }
-
-      if (c.argv[i][0] == '~')
-      {
-        strcpy(state->lastpath, cwd.str);
-        string abs_path = new_string(MAX_STR_LEN);
-        strcpy(abs_path.str, state->homepath);
-        strcat(abs_path.str, c.argv[i] + 1);
-        if (chdir(abs_path.str) != 0)
-        {
-          ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
-          free(abs_path.str);
-          return FAILURE;
-        }
-        free(abs_path.str);
-      }
-      else if (strcmp(c.argv[i], "-") == 0)
-      {
-        if (state->lastpath[0] != '\0')
-        {
-          if (chdir(state->lastpath) == -1)
-          {
-            ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
-            return FAILURE;
-          }
-          strcpy(state->lastpath, cwd.str);
-        }
-        else
-        {
-          ERROR_PRINT("OLDPWD not set\n");
-          return FAILURE;
-        }
-      }
-      else if (chdir(c.argv[i]) == -1)
-      {
-        ERROR_PRINT("Cannot warp to %s\n", c.argv[i]);
-        return FAILURE;
+        CHDIR(state->lastpath);
       }
       else
       {
-        strcpy(state->lastpath, cwd.str);
-      }
-
-      if (getcwd(cwd.str, cwd.size) == NULL)
-      {
-        DEBUG_PRINT("getcwd failed with errno %i (%s)\n", errno, strerror(errno));
-        ERROR_PRINT("Could not get current directory\n");
+        ERROR_PRINT("OLDPWD not set\n");
         return FAILURE;
       }
-      printf("%s\n", cwd.str);
     }
+    else
+    {
+      CHDIR(c.argv[i]);
+    }
+
+    GETCWD;
+    printf("%s\n", cwd);
   }
-  free(cwd.str);
+
   return SUCCESS;
 }
