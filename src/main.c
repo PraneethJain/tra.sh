@@ -27,8 +27,6 @@ int init()
 
   if (init_history() == FAILURE)
     return FAILURE;
-  if (init_prompt() == FAILURE)
-    return FAILURE;
 
   DEBUG_PRINT("Initialization Complete\n");
 
@@ -37,7 +35,6 @@ int init()
 
 void destroy()
 {
-  destroy_prompt();
   munmap(state, sizeof(trash));
   DEBUG_PRINT("Destruction Complete\n");
 }
