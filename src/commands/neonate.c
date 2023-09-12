@@ -18,7 +18,7 @@ void SIGALRM_handler(int sig)
   if (terminate)
     return;
 
-  char str[MAX_STR_LEN];
+  char str[MAX_STR_LEN] = {0};
   pid_t pid = -1;
 
   FILE *loadavg_file = fopen("/proc/loadavg", "r");
@@ -59,7 +59,7 @@ int neonate(command c)
   if (time_arg == 0)
     while (!(kbhit() && read(STDIN_FILENO, &ch, 1) == 1 && ch == 'x'))
     {
-      char str[MAX_STR_LEN];
+      char str[MAX_STR_LEN] = {0};
       pid_t pid = -1;
       FILE *loadavg_file = fopen("/proc/loadavg", "r");
       fscanf(loadavg_file, "%s %s %s %s %i", str, str, str, str, &pid);

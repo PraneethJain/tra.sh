@@ -8,12 +8,12 @@ void print_processes()
     print_command(&state->procs.c[i]);
     printf(" - ");
     char status = '?';
-    char process_path[MAX_STR_LEN];
+    char process_path[MAX_STR_LEN] = {0};
     snprintf(process_path, MAX_STR_LEN, "/proc/%i/stat", state->procs.pid[i]);
     FILE *process_file = fopen(process_path, "r");
     if (process_file != NULL)
     {
-      char buf[MAX_STR_LEN];
+      char buf[MAX_STR_LEN] = {0};
       fscanf(process_file, "%s %[^)]%c %c", buf, buf, &buf[0], &status);
     }
     fclose(process_file);

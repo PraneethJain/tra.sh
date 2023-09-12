@@ -31,7 +31,7 @@ int iman(command c)
     return FAILURE;
   }
 
-  char path[256];
+  char path[256] = {0};
   strcpy(path, "/?topic=");
   strcat(path, c.argv[1]);
   strcat(path, "&section=all");
@@ -72,7 +72,7 @@ int iman(command c)
     return FAILURE;
   }
 
-  char request[MAX_STR_LEN];
+  char request[MAX_STR_LEN] = {0};
 
   snprintf(request, sizeof(request), "GET %s HTTP/1.1\r\nHost: %s\r\n\r\n", path, url);
   if (send(fd, request, strlen(request), 0) == -1)
@@ -83,7 +83,7 @@ int iman(command c)
     return FAILURE;
   }
 
-  char response[MAX_STR_LEN];
+  char response[MAX_STR_LEN] = {0};
   ssize_t bytes_received;
   bool first = true;
   inside_tag = false;

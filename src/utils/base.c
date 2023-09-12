@@ -2,8 +2,7 @@
 
 void tilde_to_homepath(char *s)
 {
-  char temp[MAX_STR_LEN];
-  temp[0] = '\0';
+  char temp[MAX_STR_LEN] = {0};
   if (s[0] == '~')
   {
     strcpy(temp, state->homepath);

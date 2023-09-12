@@ -11,7 +11,7 @@ int get_block_size_and_max_filesize(struct dirent **entries, int n, char *path, 
     if (!flag_a && entries[i]->d_name[0] == '.')
       continue;
 
-    char cur[MAX_STR_LEN];
+    char cur[MAX_STR_LEN] = {0};
     strcpy(cur, path);
     strcat(cur, entries[i]->d_name);
 
@@ -44,7 +44,6 @@ void get_perms(struct stat *info, char *perms)
   // l    Symbolic link
   // p    FIFO
   // s    Socket
-  perms[0] = '\0';
   if (S_ISDIR(info->st_mode))
     strcat(perms, C_BLUE "d" C_RESET);
   else if (S_ISCHR(info->st_mode))
@@ -75,7 +74,7 @@ void get_perms(struct stat *info, char *perms)
 
 int print_long(char *path, const char *name, int size_width)
 {
-  char cur[MAX_STR_LEN];
+  char cur[MAX_STR_LEN] = {0};
   strcpy(cur, path);
   strcat(cur, name);
 
@@ -87,9 +86,9 @@ int print_long(char *path, const char *name, int size_width)
     return FAILURE;
   }
 
-  char perms[128];
+  char perms[128] = {0};
   get_perms(&info, perms);
-  char datetime[128];
+  char datetime[128] = {0};
   strftime(datetime, sizeof(datetime), time(0) - info.st_mtime < 15768000 ? "%h %d %H:%M" : "%h %d %Y ",
            localtime(&info.st_mtime));
   printf("%s ", perms);
@@ -114,7 +113,7 @@ int peek(command c)
   bool flag_a = false;
   bool flag_l = false;
   bool found_path = false;
-  char path[MAX_STR_LEN];
+  char path[MAX_STR_LEN] = {0};
 
   for (int i = 1; i < c.argc; ++i)
   {

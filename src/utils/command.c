@@ -49,7 +49,7 @@ void parse_input()
       c.arr[c.size].is_background = state->input[cur_ptr + cur_command_len] == '&';
 
       state->input[cur_ptr + cur_command_len] = '\0';
-      char current_command[MAX_STR_LEN];
+      char current_command[MAX_STR_LEN] = {0};
       strcpy(current_command, state->input + cur_ptr);
       // If command is valid then move to next index, otherwise stay at same index.
       c.size += commandify(&c.arr[c.size], current_command);

@@ -1,8 +1,8 @@
 #include "../headers.h"
 
-char username[MAX_STR_LEN];
-char hostname[MAX_STR_LEN];
-char cwd[MAX_STR_LEN];
+char username[MAX_STR_LEN] = {0};
+char hostname[MAX_STR_LEN] = {0};
+char cwd[MAX_STR_LEN] = {0};
 
 int prompt()
 {

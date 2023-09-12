@@ -21,7 +21,7 @@ int proclore(command c)
     return FAILURE;
   }
 
-  char process_path[MAX_STR_LEN];
+  char process_path[MAX_STR_LEN] = {0};
   snprintf(process_path, MAX_STR_LEN, "/proc/%i/stat", pid);
   FILE *process_file = fopen(process_path, "r");
   if (process_file == NULL)
@@ -33,14 +33,14 @@ int proclore(command c)
   char status = '?';
   pid_t process_gid = 0;
   size_t vmem = 0;
-  char buf[MAX_STR_LEN];
+  char buf[MAX_STR_LEN] = {0};
   fscanf(process_file, "%s %[^)]%c %c %s %i %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %zu", buf, buf, &buf[0],
          &status, buf, &process_gid, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf,
          buf, &vmem);
   fclose(process_file);
-  char exe_proc_path[MAX_STR_LEN];
+  char exe_proc_path[MAX_STR_LEN] = {0};
   snprintf(exe_proc_path, MAX_STR_LEN, "/proc/%i/exe", pid);
-  char exe_path[MAX_STR_LEN];
+  char exe_path[MAX_STR_LEN] = {0};
   int res = readlink(exe_proc_path, exe_path, MAX_STR_LEN);
   if (res == -1)
     DEBUG_PRINT("Couldn't read exe path\n");

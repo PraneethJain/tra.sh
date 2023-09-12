@@ -1,6 +1,6 @@
 #include "../headers.h"
 
-char history_path[MAX_STR_LEN];
+char history_path[MAX_STR_LEN] = {0};
 
 int init_history()
 {

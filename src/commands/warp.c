@@ -19,7 +19,7 @@
 
 int warp(command c)
 {
-  char cwd[MAX_STR_LEN];
+  char cwd[MAX_STR_LEN] = {0};
 
   if (c.argc == 1)
     strcpy(c.argv[c.argc++], "~");
