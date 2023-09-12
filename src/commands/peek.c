@@ -44,6 +44,7 @@ void get_perms(struct stat *info, char *perms)
   // l    Symbolic link
   // p    FIFO
   // s    Socket
+  perms[0] = '\0';
   if (S_ISDIR(info->st_mode))
     strcat(perms, C_BLUE "d" C_RESET);
   else if (S_ISCHR(info->st_mode))
