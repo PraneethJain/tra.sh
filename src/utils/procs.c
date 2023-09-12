@@ -8,15 +8,15 @@ void print_processes()
     print_command(&state->procs.c[i]);
     printf(" - ");
     char status = '?';
-    string process_path = new_string(MAX_STR_LEN);
-    snprintf(process_path.str, process_path.size, "/proc/%i/stat", state->procs.pid[i]);
-    FILE *process_file = fopen(process_path.str, "r");
-    free(process_path.str);
+    char process_path[MAX_STR_LEN];
+    snprintf(process_path, MAX_STR_LEN, "/proc/%i/stat", state->procs.pid[i]);
+    FILE *process_file = fopen(process_path, "r");
     if (process_file != NULL)
     {
       char buf[MAX_STR_LEN];
       fscanf(process_file, "%s %[^)]%c %c", buf, buf, &buf[0], &status);
     }
+    fclose(process_file);
 
     if (status == 'Z' || status == 'T')
       printf("Stopped");

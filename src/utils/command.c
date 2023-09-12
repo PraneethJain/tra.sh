@@ -1,11 +1,10 @@
 #include "../headers.h"
 
-bool commandify(command *c, string *current_command)
+bool commandify(command *c, char *current_command)
 {
   c->argc = 0;
-  for (char *tok = strtok(current_command->str, state->delimiters); tok != NULL; tok = strtok(NULL, state->delimiters))
+  for (char *tok = strtok(current_command, state->delimiters); tok != NULL; tok = strtok(NULL, state->delimiters))
     strcpy(c->argv[c->argc++], tok);
-
   return c->argc != 0;
 }
 
@@ -50,12 +49,10 @@ void parse_input()
       c.arr[c.size].is_background = state->input[cur_ptr + cur_command_len] == '&';
 
       state->input[cur_ptr + cur_command_len] = '\0';
-      string current_command = new_string(strlen(state->input + cur_ptr) + 1);
-      strcpy(current_command.str, state->input + cur_ptr);
-
+      char current_command[MAX_STR_LEN];
+      strcpy(current_command, state->input + cur_ptr);
       // If command is valid then move to next index, otherwise stay at same index.
-      c.size += commandify(&c.arr[c.size], &current_command);
-      free(current_command.str);
+      c.size += commandify(&c.arr[c.size], current_command);
     }
   }
 
