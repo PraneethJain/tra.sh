@@ -22,6 +22,11 @@ A shell written in c with **0 memory allocated on the heap!**
 - All code is in the `src` directory.
 - Each command's implementation is in `src/commands/<command_name>.c`.
 - Some utility functions are in `src/utils/<utility>.c`
+-   - `src/utils/base.c`: some common structs used in all other files, like the `command` and `commands` struct.
+    - `src/utils/command.c`: the point of execution of all commands. Responsible for parsing, handling piping and I/O redirection, and calling the appropriate command.
+    - `src/utils/prompt.c`: the main shell prompt.
+    - `src/utils/rawmode.c`: commands for enabling and disabling raw mode, and for reading input in it.
+    - `src/utils/singals.c`: signal handlers implemented.
 - All the header files are in `src/inc/*.h`
 
 # Assumptions
