@@ -3,6 +3,15 @@
 int time_arg;
 bool terminate = true;
 
+int kbhit()
+{
+  struct timeval tv = {0L, 0L};
+  fd_set fds;
+  FD_ZERO(&fds);
+  FD_SET(0, &fds);
+  return select(1, &fds, NULL, NULL, &tv);
+}
+
 void SIGALRM_handler(int sig)
 {
   DEBUG_PRINT("Inside SIGALRM_handler with signal %i\n", sig);
@@ -47,8 +56,19 @@ int neonate(command c)
 
   enable_raw_mode();
   char ch;
-  while (read(STDIN_FILENO, &ch, 1) == 1 && ch != 'x')
-    ;
+  if (time_arg == 0)
+    while (!(kbhit() && read(STDIN_FILENO, &ch, 1) == 1 && ch == 'x'))
+    {
+      char str[MAX_STR_LEN];
+      pid_t pid = -1;
+      FILE *loadavg_file = fopen("/proc/loadavg", "r");
+      fscanf(loadavg_file, "%s %s %s %s %i", str, str, str, str, &pid);
+      fclose(loadavg_file);
+      printf("%i\n", pid);
+    }
+  else
+    while (read(STDIN_FILENO, &ch, 1) == 1 && ch != 'x')
+      ;
   disable_raw_mode();
   terminate = true;
 
