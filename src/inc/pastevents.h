@@ -13,6 +13,5 @@ typedef struct history
 int init_history();
 int pastevents(command c);
 int add_event(commands cs);
-int destroy_history();
 
 #endif

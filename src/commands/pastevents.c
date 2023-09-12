@@ -1,16 +1,13 @@
 #include "../headers.h"
 
-string history_path;
+char history_path[MAX_STR_LEN];
 
 int init_history()
 {
-  history_path = new_string(MAX_STR_LEN);
-  if (!history_path.allocated)
-    return FAILURE;
-  strcpy(history_path.str, state->homepath);
+  strcpy(history_path, state->homepath);
 
-  strcat(history_path.str, "/.trash_history");
-  FILE *history_file = fopen(history_path.str, "rb");
+  strcat(history_path, "/.trash_history");
+  FILE *history_file = fopen(history_path, "rb");
   if (history_file == NULL)
   {
     state->h.cur_size = 0;
@@ -27,8 +24,8 @@ int init_history()
 
 int write_history()
 {
-  DEBUG_PRINT("Attempting to write history at %s\n", history_path.str);
-  FILE *history_file = fopen(history_path.str, "wb");
+  DEBUG_PRINT("Attempting to write history at %s\n", history_path);
+  FILE *history_file = fopen(history_path, "wb");
   if (history_file == NULL)
   {
     DEBUG_PRINT("fopen failed with errno %i (%s)\n", errno, strerror(errno));
@@ -160,13 +157,5 @@ int add_event(commands cs)
   state->h.arr[0] = cs;
 
   int status = write_history();
-  return status;
-}
-
-int destroy_history()
-{
-  int status = write_history();
-  free(history_path.str);
-
   return status;
 }

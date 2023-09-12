@@ -38,7 +38,6 @@ int init()
 void destroy()
 {
   destroy_prompt();
-  destroy_history();
   munmap(state, sizeof(trash));
   DEBUG_PRINT("Destruction Complete\n");
 }
