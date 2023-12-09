@@ -3,25 +3,22 @@
 
 #include "colors.h"
 #include <stdio.h>
-#define MAX_COMMANDS 128
+#include <sys/types.h>
+#define MAX_COMMANDS 16
 #define MAX_ARGS 16
 #define MAX_STR_LEN 1024
+#define MAX_PROCESSES 16
 
 #define SUCCESS 0
 #define FAILURE 1
-
-typedef struct string
-{
-  char *str;
-  size_t size;
-  bool allocated;
-} string;
 
 typedef struct command
 {
   int argc;
   char argv[MAX_ARGS][MAX_STR_LEN];
   bool is_background;
+  int infile;
+  int outfile;
 } command;
 
 typedef struct commands
@@ -30,8 +27,15 @@ typedef struct commands
   size_t size;
 } commands;
 
-string new_string(size_t size);
-void replace(string *s, string a, string b);
+typedef struct processes
+{
+  command c[MAX_PROCESSES];
+  pid_t pid[MAX_PROCESSES];
+  size_t length;
+} processes;
+
+void tilde_to_homepath(char *s);
+void homepath_to_tilde(char *s);
 
 void print_command(command *c);
 void print_commands(commands *cs);

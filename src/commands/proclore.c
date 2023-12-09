@@ -21,10 +21,9 @@ int proclore(command c)
     return FAILURE;
   }
 
-  string process_path = new_string(MAX_STR_LEN);
-  snprintf(process_path.str, process_path.size, "/proc/%i/stat", pid);
-  FILE *process_file = fopen(process_path.str, "r");
-  free(process_path.str);
+  char process_path[MAX_STR_LEN] = {0};
+  snprintf(process_path, MAX_STR_LEN, "/proc/%i/stat", pid);
+  FILE *process_file = fopen(process_path, "r");
   if (process_file == NULL)
   {
     ERROR_PRINT("No process with pid %i\n", pid);
@@ -34,34 +33,27 @@ int proclore(command c)
   char status = '?';
   pid_t process_gid = 0;
   size_t vmem = 0;
-  char buf[MAX_STR_LEN];
+  char buf[MAX_STR_LEN] = {0};
   fscanf(process_file, "%s %[^)]%c %c %s %i %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %zu", buf, buf, &buf[0],
          &status, buf, &process_gid, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf, buf,
          buf, &vmem);
-
-  string exe_proc_path = new_string(MAX_STR_LEN);
-  snprintf(exe_proc_path.str, exe_proc_path.size, "/proc/%i/exe", pid);
-  string exe_path = new_string(MAX_STR_LEN);
-  int res = readlink(exe_proc_path.str, exe_path.str, exe_path.size);
-  free(exe_proc_path.str);
+  fclose(process_file);
+  char exe_proc_path[MAX_STR_LEN] = {0};
+  snprintf(exe_proc_path, MAX_STR_LEN, "/proc/%i/exe", pid);
+  char exe_path[MAX_STR_LEN] = {0};
+  int res = readlink(exe_proc_path, exe_path, MAX_STR_LEN);
   if (res == -1)
-  {
     DEBUG_PRINT("Couldn't read exe path\n");
-  }
   else
-  {
-    exe_path.str[res] = '\0';
-  }
+    exe_path[res] = '\0';
 
-  if (strstr(exe_path.str, homepath.str) == exe_path.str) // If cwd starts with homepath
-    replace(&exe_path, homepath, tilde);
+  homepath_to_tilde(exe_path);
 
   printf("pid: %i\n", pid);
   printf("Process Status: %c%c\n", status, pid == getpid() ? '+' : ' ');
   printf("Process Group: %i\n", process_gid);
   printf("Virtual Memory: %zu\n", vmem);
-  printf("Executable Path: %s\n", exe_path.str);
-  free(exe_path.str);
+  printf("Executable Path: %s\n", exe_path);
 
   return SUCCESS;
 }

@@ -1,78 +1,86 @@
 #include "../headers.h"
 
-process_list init_process_list()
+void print_processes()
 {
-  process_list p = (process_list)malloc(sizeof(process_list_st));
-  if (p == NULL)
+  for (size_t i = 0; i < state->procs.length; ++i)
   {
-    DEBUG_PRINT("malloc failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Ran out of memory!");
-  }
-  // Dummy node
-  p->pid = -1;
-  p->next = NULL;
-
-  return p;
-}
-
-int insert_process(process_list p, command c, pid_t pid)
-{
-  process_list new = (process_list)malloc(sizeof(process_list_st));
-  if (new == NULL)
-  {
-    DEBUG_PRINT("malloc failed with errno %i (%s)\n", errno, strerror(errno));
-    ERROR_PRINT("Ran out of memory!");
-    return FAILURE;
-  }
-  new->c = c;
-  new->pid = pid;
-  new->next = p->next;
-  p->next = new;
-
-  return SUCCESS;
-}
-
-int remove_process(process_list p, pid_t pid)
-{
-  process_list cur = p->next;
-  process_list prev = p;
-
-  while (cur != NULL)
-  {
-    process_list next = cur->next;
-    if (cur->pid == pid)
+    printf("%i : ", state->procs.pid[i]);
+    print_command(&state->procs.c[i]);
+    printf(" - ");
+    char status = '?';
+    char process_path[MAX_STR_LEN] = {0};
+    snprintf(process_path, MAX_STR_LEN, "/proc/%i/stat", state->procs.pid[i]);
+    FILE *process_file = fopen(process_path, "r");
+    if (process_file != NULL)
     {
-      printf("%s exited normally (%i)\n", cur->c.argv[0], cur->pid);
-      free(cur);
-      prev->next = next;
-      return SUCCESS;
+      char buf[MAX_STR_LEN] = {0};
+      fscanf(process_file, "%s %[^)]%c %c", buf, buf, &buf[0], &status);
     }
-    prev = prev->next;
-    cur = next;
-  }
+    fclose(process_file);
 
-  return FAILURE;
+    if (status == 'Z' || status == 'T')
+      printf("Stopped");
+    else
+      printf("Running");
+    printf("\n");
+  }
 }
 
-int remove_processes(process_list p)
+int insert_process(command c, pid_t pid)
 {
-  pid_t to_kill;
-  int status;
-  while ((to_kill = waitpid(-1, &status, WNOHANG)) > 0)
-    if (remove_process(p, to_kill) == FAILURE)
-      return FAILURE;
+  bool inserted = false;
+  for (size_t i = 0; i < state->procs.length; ++i)
+  {
+    if (state->procs.pid[i] > pid)
+    {
+      for (size_t j = state->procs.length; j > i; --j)
+      {
+        state->procs.c[j] = state->procs.c[j - 1];
+        state->procs.pid[j] = state->procs.pid[j - 1];
+      }
+      state->procs.c[i] = c;
+      state->procs.pid[i] = pid;
+      inserted = true;
+    }
+  }
 
+  if (!inserted)
+  {
+    state->procs.c[state->procs.length] = c;
+    state->procs.pid[state->procs.length] = pid;
+  }
+
+  ++state->procs.length;
   return SUCCESS;
 }
 
-void free_process_list(process_list p)
+int remove_zombie_processes()
 {
-  process_list cur = p->next;
-  while (cur != NULL)
+  bool done = false;
+  while (!done)
   {
-    process_list temp = cur->next;
-    free(cur);
-    cur = temp;
+    int status;
+    done = true;
+    for (size_t i = 0; i < state->procs.length; ++i)
+    {
+      if (waitpid(state->procs.pid[i], &status, WNOHANG | WUNTRACED) != 0)
+      {
+        if (WIFEXITED(status))
+          printf("%s exited normally (%i)\n", state->procs.c[i].argv[0], state->procs.pid[i]);
+        else
+          printf("%s exited abnormally (%i)\n", state->procs.c[i].argv[0], state->procs.pid[i]);
+
+        for (size_t j = i; j < state->procs.length - 1; ++j)
+        {
+          state->procs.c[j] = state->procs.c[j + 1];
+          state->procs.pid[j] = state->procs.pid[j + 1];
+        }
+        --state->procs.length;
+        done = false;
+        break;
+      }
+    }
   }
-  free(p);
+
+  return SUCCESS;
 }

@@ -10,6 +10,9 @@ int system_command(command c)
       argv[i] = c.argv[i];
     argv[c.argc] = NULL;
 
+    setpgid(0, 0);
+    signal(SIGINT, SIG_DFL);
+    signal(SIGTSTP, SIG_DFL);
     if (execvp(c.argv[0], argv) == -1)
     {
       DEBUG_PRINT("execvp failed with errno %i (%s)\n", errno, strerror(errno));
@@ -22,13 +25,15 @@ int system_command(command c)
     if (c.is_background)
     {
       printf("%i\n", pid);
-      if (insert_process(p, c, pid) == FAILURE)
+      if (insert_process(c, pid) == FAILURE)
         return FAILURE;
     }
     else
     {
-      int status;
-      waitpid(pid, &status, 0);
+      int status = exec_in_fg(pid);
+
+      if (WIFSTOPPED(status)) // Ctrl+Z pressed
+        insert_process(c, pid);
     }
   }
 

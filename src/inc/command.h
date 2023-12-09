@@ -4,7 +4,7 @@
 #include "base.h"
 #include <stdbool.h>
 
-void parse_input(string input);
+void parse_input();
 int exec_command(command input);
 
 #endif

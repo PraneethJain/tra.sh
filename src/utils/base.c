@@ -1,39 +1,26 @@
 #include "../headers.h"
 
-string new_string(size_t size)
+void tilde_to_homepath(char *s)
 {
-  string s;
-  s.size = size;
-  s.str = (char *)malloc(size * sizeof(char));
-  if (s.str == NULL)
+  char temp[MAX_STR_LEN] = {0};
+  if (s[0] == '~')
   {
-    DEBUG_PRINT("Bad malloc\n");
-    ERROR_PRINT("Ran out of memory!");
-    s.allocated = false;
+    strcpy(temp, state->homepath);
+    strcat(temp, s + 1);
+    strcpy(s, temp);
   }
-  else
-  {
-    s.allocated = true;
-    s.str[0] = '\0';
-  }
-
-  return s;
 }
 
-// Replaces the first occurence of a in s by b
-void replace(string *s, string a, string b)
+void homepath_to_tilde(char *s)
 {
-  char *ptr = strstr(s->str, a.str);
-  if (ptr == NULL)
-    return;
-
-  size_t idx = ptr - s->str;
-  string temp = new_string(s->size);
-  strncpy(temp.str, s->str, idx);
-  strcat(temp.str, b.str);
-  strcat(temp.str, s->str + idx + strlen(a.str));
-  strcpy(s->str, temp.str);
-  free(temp.str);
+  if (strstr(s, state->homepath) == s)
+  {
+    size_t s_len = strlen(s);
+    size_t homepath_len = strlen(state->homepath);
+    for (size_t i = 1; i <= s_len - homepath_len + 1; ++i)
+      s[i] = s[i + homepath_len - 1];
+    s[0] = '~';
+  }
 }
 
 void print_command(command *c)
